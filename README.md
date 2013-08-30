@@ -1,11 +1,8 @@
 php-youtube-api
 ===============
 
-PHP wrapper for the Youtube Data API v3 ( Non-OAuth )
-
-## Youtube Data API v3
-- [Youtube Data API v3 Doc](https://developers.google.com/youtube/v3/)
-- [Obtain API key from Google API Console](http://code.google.com/apis/console)
+A basic PHP wrapper for the Youtube Data API v3 ( Non-OAuth ). Designed to be easily 
+fetch the public data from Youtube. OAuth endpoints maybe added in the future.
 
 
 ## Install
@@ -56,3 +53,15 @@ Run the Install
 
     // Return an array of PHP objects
     $playlists = $youtube->getPlaylistsByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
+
+## Format of returned data
+The returnd json is decoded as PHP objects (not Array).
+Please read the ["Reference" section](https://developers.google.com/youtube/v3/docs/) of the Official API doc.
+
+
+## Youtube Data API v3
+- [Youtube Data API v3 Doc](https://developers.google.com/youtube/v3/)
+- [Obtain API key from Google API Console](http://code.google.com/apis/console)
+
+## Contact
+For bugs, complain and suggestions please send email to jason@madcoda.com :)
