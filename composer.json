@@ -1,6 +1,7 @@
 {
     "name": "madcoda/php-youtube-api",
     "description": "PHP wrapper for the Youtube Data API v3",
+    "licenses": "MIT",
     "authors": [
         {
             "name": "Madcoda",
