@@ -1,0 +1,16 @@
+{
+    "name": "madcoda/php-youtube-api",
+    "description": "PHP wrapper for the Youtube Data API v3",
+    "authors": [
+        {
+            "name": "Madcoda",
+            "email": "jason@madcoda.com"
+        }
+    ],
+    "require": {
+        "php" : ">5.3"
+    },
+    "autoload": {
+        "files" : ["youtube.php"]
+    }
+}
