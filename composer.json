@@ -12,6 +12,8 @@
         "php" : ">5.3"
     },
     "autoload": {
-        "files" : ["youtube.php"]
+        "psr-0": {
+            "Madcoda": "lib/"
+        }
     }
 }
