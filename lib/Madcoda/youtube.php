@@ -27,7 +27,11 @@ class Youtube {
      * @param array $params 
      */
     public function __construct($params){
-        $this->youtube_key = $params['key'];
+        if(is_array($params) && array_key_exists('key', $params)){
+            $this->youtube_key = $params['key'];
+        }else{
+            throw new \Exception('Google API key is Required, please visit http://code.google.com/apis/console');
+        }
     }
 
 
@@ -44,12 +48,12 @@ class Youtube {
     }
 
 
-    public function search($q){
+    public function search($q, $maxResults=10){
         $API_URL = $this->getApi('search.list');
         $params = array(
             'q' => $q,
             'part' => 'id, snippet',
-            'maxResults' => 10
+            'maxResults' => $maxResults
         );
 
         $apiData = $this->api_get($API_URL, $params);
@@ -116,24 +120,32 @@ class Youtube {
     
     private function decodeSingle(&$apiData){
         $resObj = json_decode($apiData);
-        $itemsArray = $resObj->items;
-        
-        if(!is_array($itemsArray) || count($itemsArray) == 0){
-            return FALSE;
+        if(isset($resObj->error)){
+            $msg = "Error ".$resObj->error->code." ".$resObj->error->message." : ".$resObj->error->errors[0]->reason;
+            throw new \Exception($msg);
         }else{
-            return $itemsArray[0];
+            $itemsArray = $resObj->items;
+            if(!is_array($itemsArray) || count($itemsArray) == 0){
+                return FALSE;
+            }else{
+                return $itemsArray[0];
+            }
         }
     }
 
 
     private function decodeList(&$apiData){
         $resObj = json_decode($apiData);
-        $itemsArray = $resObj->items;
-        
-        if(!is_array($itemsArray) || count($itemsArray) == 0){
-            return FALSE;
+        if(isset($resObj->error)){
+            $msg = "Error ".$resObj->error->code." ".$resObj->error->message." : ".$resObj->error->errors[0]->reason;
+            throw new \Exception($msg);
         }else{
-            return $itemsArray;
+            $itemsArray = $resObj->items;
+            if(!is_array($itemsArray) || count($itemsArray) == 0){
+                return FALSE;
+            }else{
+                return $itemsArray;
+            }
         }
     }
 
