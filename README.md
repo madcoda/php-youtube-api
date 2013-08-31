@@ -7,6 +7,7 @@ fetch the public data from Youtube. OAuth endpoints maybe added in the future.
 
 ## Install
 (Since this project has not been listed in Packagist, so specify a repository here)
+
 Example composer.json
 
     {
@@ -30,7 +31,7 @@ Run the Install
     composer update
 
 
-## Examples (Plain PHP project)
+## Usage (Plain PHP project)
 
 	require 'vendor/autoload.php';
 
@@ -53,6 +54,28 @@ Run the Install
 
     // Return an array of PHP objects
     $playlists = $youtube->getPlaylistsByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
+
+## Usage (Laravel Project)
+Add the dependency in the composer.json, then run 
+
+    composer update
+
+Since the Laravel framework also configured to autoload composer dependencies (in bootstrap/autoload.php),
+You don't need to add any require or include statements, just use the class
+
+app/controllers/YoutubeController.php
+
+    class YoutubeController extends BaseController {
+
+        public function index()
+        {
+            $youtube = new Madcoda\Youtube(array('key' => '/* Your API key here */'));
+
+            print_r($youtube->getVideoInfo(Input::get('vid')));
+        }
+
+    }
+
 
 ## Format of returned data
 The returnd json is decoded as PHP objects (not Array).
