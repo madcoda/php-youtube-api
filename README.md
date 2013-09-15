@@ -6,21 +6,13 @@ fetch the public data from Youtube. OAuth endpoints maybe added in the future.
 
 
 ## Install
-(Since this project has not been listed in Packagist, so specify a repository here)
-
 Example composer.json
 
     {
 	    "name": "MyCoolProject",
 	    "require": {
 	        "madcoda/php-youtube-api" : "dev-master"
-	    },
-	    "repositories": [
-	        {
-	            "type": "vcs",
-	            "url": "https://github.com/madcoda/php-youtube-api.git"
-	        }
-	    ]
+	    }
     }
 
 Run the Install
