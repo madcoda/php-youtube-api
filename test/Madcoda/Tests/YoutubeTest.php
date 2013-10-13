@@ -18,10 +18,6 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
 
 	var $youtube;
 
-	public function __construct()
-	{
-	}
-
 	public function setUp()
     {
     	$TEST_API_KEY = 'AIzaSyDDefsgXEZu57wYgABF7xEURClu4UAzyB8';
@@ -30,7 +26,15 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        
+    	$this->youtube = null;
+    }
+
+    public function MalFormURLProvider()
+    {
+        return array(
+          array('https://'),
+          array('http://www.yuotube.com'),
+        );
     }
 
 
@@ -126,8 +130,9 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
 
     	$response = $this->youtube->getPlaylistById($playlist->id);
     	$this->assertEquals('youtube#playlist', $response->kind);
-    	
+
     }
+
 
     public function testParseVIdFromURLFull(){
     	$vId = $this->youtube->parseVIdFromURL('http://www.youtube.com/watch?v=1FJHYqE0RDg');
@@ -136,7 +141,42 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
 
     public function testParseVIdFromURLShort(){
     	$vId = $this->youtube->parseVIdFromURL('http://youtu.be/1FJHYqE0RDg');
-    	$this->assertEquals('1FJHYqE0RDg', $vId);	
+    	$this->assertEquals('1FJHYqE0RDg', $vId);
+    }
+
+    /**
+     * 
+     * @dataProvider MalFormURLProvider
+     * @expectedException Exception
+     */
+    public function testParseVIdFromURLException($url){
+    	$vId = $this->youtube->parseVIdFromURL($url);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testParseVIdException(){
+    	$vId = $this->youtube->parseVIdFromURL('http://www.facebook.com');
+    }
+
+
+    /**
+     * Test skipped for now, since the API returns Error 500
+     */
+    public function testNotFoundAPICall(){
+    	//$vID = 'Utn7NBtbHL4';//an deleted video
+    	//$response = $this->youtube->getVideoInfo($vID);
+    	//$this->assertFalse($response);
+    }
+
+    /**
+     * Test skipped for now, since the API returns Error 500
+     */
+    public function testNotFoundAPICall2(){
+    	//$channelId = 'non_exist_channelid';
+    	//$response = $this->youtube->getPlaylistsByChannelId($channelId);
+    	//$this->assertFalse($response);
     }
 
 

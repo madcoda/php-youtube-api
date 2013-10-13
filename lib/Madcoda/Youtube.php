@@ -142,7 +142,10 @@ class Youtube {
     private function decodeSingle(&$apiData){
         $resObj = json_decode($apiData);
         if(isset($resObj->error)){
-            $msg = "Error ".$resObj->error->code." ".$resObj->error->message." : ".$resObj->error->errors[0]->reason;
+            $msg = "Error ".$resObj->error->code." ".$resObj->error->message;
+            if(isset($resObj->error->errors[0])){
+                $msg .= " : " . $resObj->error->errors[0]->reason;
+            }
             throw new \Exception($msg);
         }else{
             $itemsArray = $resObj->items;
@@ -158,7 +161,10 @@ class Youtube {
     private function decodeList(&$apiData){
         $resObj = json_decode($apiData);
         if(isset($resObj->error)){
-            $msg = "Error ".$resObj->error->code." ".$resObj->error->message." : ".$resObj->error->errors[0]->reason;
+            $msg = "Error ".$resObj->error->code." ".$resObj->error->message;
+            if(isset($resObj->error->errors[0])){
+                $msg .= " : " . $resObj->error->errors[0]->reason;
+            }
             throw new \Exception($msg);
         }else{
             $itemsArray = $resObj->items;
