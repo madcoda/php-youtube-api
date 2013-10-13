@@ -106,6 +106,27 @@ class Youtube {
     }
 
 
+    /**
+     * Parse a youtube URL to get the youtube Vid.
+     * Support both full URL (www.youtube.com) and short URL (youtu.be)
+     * @param  [type] $youtube_url [description]
+     * @return [type]              [description]
+     */
+    public function parseVIdFromURL($youtube_url){
+        if(strpos($youtube_url, 'youtube.com')){
+            $params = $this->_parse_url_query($youtube_url);
+            return $params['v'];
+        }else if(strpos($youtube_url, 'youtu.be')){
+            $path = $this->_parse_url_path($youtube_url);
+            $vid = substr($path, 1);
+            return $vid;
+        }else{
+            throw new \Exception('The supplied URL does not look like a Youtube URL');
+        }
+        
+    }
+
+
 
 
     /*
@@ -164,13 +185,30 @@ class Youtube {
         }
         curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, 1);
         $tuData = curl_exec($tuCurl);
-        if(!curl_errno($tuCurl)){ 
-          //$info = curl_getinfo($tuCurl); 
-          //echo 'Took ' . $info['total_time'] . ' seconds to send a request to ' . $info['url']; 
-        } else { 
-          //echo 'Curl error: ' . curl_error($tuCurl); 
+        if(curl_errno($tuCurl))
+        {
+          throw new \Exception('Curl Error : ' . curl_error($tuCurl));
         }
         return $tuData;
+    }
+
+    private function _parse_url_path($url){
+        $array = parse_url($url);
+        return $array['path'];
+    }
+
+    private function _parse_url_query($url){
+        $array = parse_url($url);
+        $query = $array['query'];
+        
+        $queryParts = explode('&', $query); 
+        
+        $params = array(); 
+        foreach ($queryParts as $param) { 
+            $item = explode('=', $param); 
+            $params[$item[0]] = $item[1]; 
+        }
+        return $params;
     }
 
 }
