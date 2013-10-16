@@ -128,12 +128,12 @@ class Youtube {
      * @param  [type] $youtube_url [description]
      * @return [type]              [description]
      */
-    public function parseVIdFromURL($youtube_url){
+    public static function parseVIdFromURL($youtube_url){
         if(strpos($youtube_url, 'youtube.com')){
-            $params = $this->_parse_url_query($youtube_url);
+            $params = self::_parse_url_query($youtube_url);
             return $params['v'];
         }else if(strpos($youtube_url, 'youtu.be')){
-            $path = $this->_parse_url_path($youtube_url);
+            $path = self::_parse_url_path($youtube_url);
             $vid = substr($path, 1);
             return $vid;
         }else{
@@ -214,12 +214,12 @@ class Youtube {
         return $tuData;
     }
 
-    private function _parse_url_path($url){
+    private static function _parse_url_path($url){
         $array = parse_url($url);
         return $array['path'];
     }
 
-    private function _parse_url_query($url){
+    private static function _parse_url_query($url){
         $array = parse_url($url);
         $query = $array['query'];
         
