@@ -1,8 +1,14 @@
 php-youtube-api
 ===============
 
-A basic PHP wrapper for the Youtube Data API v3 ( Non-OAuth ). Designed to be easily 
-fetch the public data from Youtube. OAuth endpoints maybe added in the future.
+A basic PHP wrapper for the Youtube Data API v3 ( Non-OAuth ). Designed to let devs easily 
+fetch public data (Video, Channel, Playlists info) from Youtube. No 3rd party dependancy. (except PHPUnit)
+The reason of returning the decoded JSON response directly is that you only need to read the Google API doc 
+to use this library, instead of learning my set of API again (Keep it simple).
+
+Well...actually some parameters are missing in this library, because I don't need them at this point, if you desire a particular feature please file an issue here :)
+
+(Currently will not consider adding OAuth endpoints.)
 
 
 ## Install
