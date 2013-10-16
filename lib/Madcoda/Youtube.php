@@ -208,6 +208,25 @@ class Youtube {
     }
 
 
+    /**
+     * Get the channel object by supplying the URL of the channel page
+     * @param  string $youtube_url
+     * @return object Channel object
+     */
+    public function getChannelFromURL($youtube_url){
+        if(strpos($youtube_url, 'youtube.com') === FALSE){
+            throw new \Exception('The supplied URL does not look like a Youtube URL');
+        }
+
+        $path = self::_parse_url_path($youtube_url);
+        $segments = explode('/', $path);
+        $username = $segments[count($segments)-1];
+        $channel = $this->getChannelByName($username);
+
+        return $channel;
+    }
+
+
 
 
     /*

@@ -202,6 +202,12 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testGetChannelFromURL(){
+        $channel = $this->youtube->getChannelFromURL('http://www.youtube.com/user/Google');
+
+        $this->assertEquals('UCK8sQmJBp8GCxrOtXWBpyEA', $channel->id);
+        $this->assertEquals('Google', $channel->snippet->title);
+    }
 
 
     /**
