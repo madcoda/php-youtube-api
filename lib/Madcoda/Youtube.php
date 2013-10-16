@@ -88,11 +88,11 @@ class Youtube {
 
     /**
      * Search only videos in the channel
-     * @param  [type]  $q          [description]
-     * @param  [type]  $channelId  [description]
-     * @param  integer $maxResults [description]
-     * @param  [type]  $order      [description]
-     * @return [type]              [description]
+     * @param  string  $q         
+     * @param  string  $channelId 
+     * @param  integer $maxResults
+     * @param  string  $order     
+     * @return object             
      */
     public function searchChannelVideos($q, $channelId, $maxResults=10, $order=null){
 
@@ -190,8 +190,8 @@ class Youtube {
     /**
      * Parse a youtube URL to get the youtube Vid.
      * Support both full URL (www.youtube.com) and short URL (youtu.be)
-     * @param  [type] $youtube_url [description]
-     * @return [type]              [description]
+     * @param  string $youtube_url
+     * @return string Video Id
      */
     public static function parseVIdFromURL($youtube_url){
         if(strpos($youtube_url, 'youtube.com')){
