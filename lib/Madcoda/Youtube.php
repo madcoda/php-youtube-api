@@ -18,6 +18,7 @@ class Youtube {
         'search.list' => 'https://www.googleapis.com/youtube/v3/search',
         'channels.list' => 'https://www.googleapis.com/youtube/v3/channels',
         'playlists.list' => 'https://www.googleapis.com/youtube/v3/playlists',
+        'activities' => 'https://www.googleapis.com/youtube/v3/activities'
     );
 
 
@@ -104,6 +105,21 @@ class Youtube {
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeSingle($apiData);
     }
+
+
+    public function getActivitiesByChannelId($channelId){
+        if(empty($channelId)){
+            throw new \InvalidArgumentException('ChannelId must be supplied');
+        }
+        $API_URL = $this->getApi('activities');
+        $params = array(
+            'channelId' => $channelId,
+            'part' => 'id, snippet, contentDetails'
+        );
+        $apiData = $this->api_get($API_URL, $params);
+        return $this->decodeList($apiData);
+    }
+
 
 
     /**

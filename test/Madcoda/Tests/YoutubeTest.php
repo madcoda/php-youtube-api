@@ -161,6 +161,27 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
     }
 
 
+
+    public function testGetActivitiesByChannelId(){
+        $GOOGLE_CHANNELID = 'UCK8sQmJBp8GCxrOtXWBpyEA';
+        $response = $this->youtube->getActivitiesByChannelId($GOOGLE_CHANNELID);
+        $this->assertTrue(count($response) > 0);
+        $this->assertEquals('youtube#activity', $response[0]->kind);
+        $this->assertEquals('Google', $response[0]->snippet->channelTitle);
+        //print_r($response);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testGetActivitiesByChannelIdException(){
+        $channelId = '';
+        $response = $this->youtube->getActivitiesByChannelId($channelId);
+    }
+
+
+
+
     /**
      * Test skipped for now, since the API returns Error 500
      */
