@@ -49,13 +49,78 @@ class Youtube {
     }
 
 
+    /**
+     * Simple search interface, this search all stuffs
+     * and order by relevance
+     */
     public function search($q, $maxResults=10){
-        $API_URL = $this->getApi('search.list');
         $params = array(
             'q' => $q,
             'part' => 'id, snippet',
             'maxResults' => $maxResults
         );
+        return $this->searchAdvanced($params);
+    }
+
+
+    /**
+     * Search only videos
+     * @param  string  $q          Query
+     * @param  integer $maxResults number of results to return
+     * @param  string  $order      Order by
+     * @return StdClass            API results
+     */
+    public function searchVideos($q, $maxResults=10, $order=null){
+
+        $params = array(
+            'q' => $q,
+            'type'=>'video',
+            'part' => 'id, snippet',
+            'maxResults' => $maxResults
+        );
+        if(!empty($order)){
+            $params['order'] = $order;
+        }
+
+        return $this->searchAdvanced($params);
+    }
+
+
+    /**
+     * Search only videos in the channel
+     * @param  [type]  $q          [description]
+     * @param  [type]  $channelId  [description]
+     * @param  integer $maxResults [description]
+     * @param  [type]  $order      [description]
+     * @return [type]              [description]
+     */
+    public function searchChannelVideos($q, $channelId, $maxResults=10, $order=null){
+
+        $params = array(
+            'q' => $q,
+            'type'=>'video',
+            'channelId' => $channelId,
+            'part' => 'id, snippet',
+            'maxResults' => $maxResults
+        );
+        if(!empty($order)){
+            $params['order'] = $order;
+        }
+
+        return $this->searchAdvanced($params);
+    }
+
+
+    /**
+     * Generic Search interface, use any parameters specified in
+     * the API reference
+     */
+    public function searchAdvanced($params){
+        $API_URL = $this->getApi('search.list');
+
+        if(empty($params) || !isset($params['q'])){
+            throw new \InvalidArgumentException('at least the Search query must be supplied');
+        }
 
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeList($apiData);

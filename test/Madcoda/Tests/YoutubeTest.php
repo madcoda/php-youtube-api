@@ -78,8 +78,30 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testSearch(){
-    	$response = $this->youtube->search('Android');
-    	//print_r($response);
+        $limit = rand(3, 10);
+    	$response = $this->youtube->search('Android', $limit);
+    	$this->assertEquals($limit, count($response));
+        $this->assertEquals('youtube#searchResult', $response[0]->kind);
+    }
+
+    public function testSearchVideos(){
+        $limit = rand(3, 10);
+        $response = $this->youtube->searchVideos('Android', $limit);
+        $this->assertEquals($limit, count($response));
+        $this->assertEquals('youtube#searchResult', $response[0]->kind);
+        $this->assertEquals('youtube#video', $response[0]->id->kind);
+    }
+
+    public function testSearchChannelVideos(){
+        $limit = rand(3, 10);
+        $response = $this->youtube->searchChannelVideos('Android', 'UCVHFbqXqoYvEWM1Ddxl0QDg', $limit);
+        $this->assertEquals($limit, count($response));
+        $this->assertEquals('youtube#searchResult', $response[0]->kind);
+        $this->assertEquals('youtube#video', $response[0]->id->kind);
+    }
+
+    public function testSearchAdvanced(){
+        //TODO
     }
 
     public function testGetChannelByName(){
