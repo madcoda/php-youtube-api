@@ -8,7 +8,7 @@ to use this library, instead of learning my set of API again (Keep it simple).
 
 Well...actually some parameters are missing in this library, because I don't need them at this point, if you desire a particular feature please file an issue here :)
 
-(Currently will not consider adding OAuth endpoints.)
+Currently will not consider adding OAuth endpoints. (those required "authorized request")
 
 
 ## Install
@@ -85,4 +85,5 @@ Please read the ["Reference" section](https://developers.google.com/youtube/v3/d
 - [Obtain API key from Google API Console](http://code.google.com/apis/console)
 
 ## Contact
-For bugs, complain and suggestions please send email to jason@madcoda.com :)
+For bugs, complain and suggestions please [file an Issue here](https://github.com/madcoda/php-youtube-api/issues) 
+or send email to jason@madcoda.com :)
