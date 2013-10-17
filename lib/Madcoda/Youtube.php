@@ -219,9 +219,18 @@ class Youtube {
         }
 
         $path = self::_parse_url_path($youtube_url);
-        $segments = explode('/', $path);
-        $username = $segments[count($segments)-1];
-        $channel = $this->getChannelByName($username);
+        //echo $path;
+        if(strpos($path, '/channel') === 0){
+            $segments = explode('/', $path);
+            $channelId = $segments[count($segments)-1];
+            $channel = $this->getChannelById($channelId);
+        }else if(strpos($path, '/user') === 0){
+            $segments = explode('/', $path);
+            $username = $segments[count($segments)-1];
+            $channel = $this->getChannelByName($username);
+        }else{
+            throw new \Exception('The supplied URL does not look like a Youtube Channel URL');   
+        }
 
         return $channel;
     }
