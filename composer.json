@@ -1,13 +1,19 @@
 {
     "name": "madcoda/php-youtube-api",
+    "type": "library",
     "description": "PHP wrapper for the Youtube Data API v3",
-    "licenses": "MIT",
+    "keywords": ["youtube", "api", "video", "madcoda"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Madcoda",
             "email": "jason@madcoda.com"
         }
     ],
+    "support":{
+            "email":"jason@madcoda.com",
+            "issues":"https://github.com/madcoda/php-youtube-api/issues"
+    },
     "require": {
         "php" : ">5.3"
     },
