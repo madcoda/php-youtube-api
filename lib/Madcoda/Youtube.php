@@ -239,16 +239,22 @@ class Youtube {
 
 
     /*
-     *  Private Methods 
+     *  Internally used Methods, set visibility to public to enable more flexibility
      */
-    
 
-    private function getApi($name){
+    public function getApi($name){
         return $this->APIs[$name];
     }
 
     
-    private function decodeSingle(&$apiData){
+    /**
+     * Decode the response from youtube, extract the single resource object.
+     * (Don't use this to decode the response containing list of objects)
+     * @param  string $apiData the api response from youtube
+     * @return StdClass          an Youtube resource object
+     * @throws   If an error is responded from youtube API
+     */
+    public function decodeSingle(&$apiData){
         $resObj = json_decode($apiData);
         if(isset($resObj->error)){
             $msg = "Error ".$resObj->error->code." ".$resObj->error->message;
@@ -267,7 +273,12 @@ class Youtube {
     }
 
 
-    private function decodeList(&$apiData){
+    /**
+     * Decode the response from youtube, extract the list of resource objects
+     * @param  string $apiData response string from youtube
+     * @return array          Array of StdClass objects
+     */
+    public function decodeList(&$apiData){
         $resObj = json_decode($apiData);
         if(isset($resObj->error)){
             $msg = "Error ".$resObj->error->code." ".$resObj->error->message;
@@ -286,7 +297,10 @@ class Youtube {
     }
 
 
-    private function api_get($url, $params){
+    /**
+     * using CURL to issue a GET request
+     */
+    public function api_get($url, $params){
         //set the youtube key
         $params['key'] = $this->youtube_key;
 
@@ -307,12 +321,24 @@ class Youtube {
         return $tuData;
     }
 
-    private static function _parse_url_path($url){
+
+    /**
+     * parse the input url string and return just the path part
+     * @param  string $url the URL
+     * @return string      the path string
+     */
+    public static function _parse_url_path($url){
         $array = parse_url($url);
         return $array['path'];
     }
 
-    private static function _parse_url_query($url){
+
+    /**
+     * parse the input url string and return an array of query params
+     * @param  string $url the URL
+     * @return array      array of query params
+     */
+    public static function _parse_url_query($url){
         $array = parse_url($url);
         $query = $array['query'];
         
