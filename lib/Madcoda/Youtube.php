@@ -150,12 +150,15 @@ class Youtube {
 
 
 
-    public function getPlaylistsByChannelId($channelId){
+    public function getPlaylistsByChannelId($channelId, $optionalParams = array()){
         $API_URL = $this->getApi('playlists.list');
         $params = array(
             'channelId' => $channelId,
             'part' => 'id, snippet, status'
         );
+        if ($optionalParams) {
+            $params = array_merge($params, $optionalParams);
+        }
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeList($apiData);
     }
