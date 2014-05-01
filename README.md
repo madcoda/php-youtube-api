@@ -92,6 +92,7 @@ app/controllers/YoutubeController.php
 
 If you want to use this class as "Youtube", you can add an aliases, edit the app/config/app.php,
 Insert the following line:
+
     'aliases' => array(
         ...
 
