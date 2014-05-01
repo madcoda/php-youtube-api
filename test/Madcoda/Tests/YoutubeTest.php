@@ -214,9 +214,9 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
      * Test skipped for now, since the API returns Error 500
      */
     public function testNotFoundAPICall(){
-    	//$vID = 'Utn7NBtbHL4';//an deleted video
-    	//$response = $this->youtube->getVideoInfo($vID);
-    	//$this->assertFalse($response);
+    	$vID = 'Utn7NBtbHL4';//an deleted video
+    	$response = $this->youtube->getVideoInfo($vID);
+    	$this->assertFalse($response);
     }
 
     /**
