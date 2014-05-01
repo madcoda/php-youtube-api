@@ -38,8 +38,16 @@ Run the Install
     // Return a std PHP object 
     $video = $youtube->getVideoInfo('rie-hPVJ7Sw');
 
-    // Return an array of PHP objects
-    $videoList = $youtube->search('Android');
+    // Search playlists, channels and videos, Return an array of PHP objects
+    $results = $youtube->search('Android');
+
+    // Search only Videos, Return an array of PHP objects
+    $videoList = $youtube->searchVideos('Android');
+
+    // Search only Videos in a given channel, Return an array of PHP objects
+    $videoList = $youtube->searchChannelVideos('keyword', 'UCk1SpWNzOs4MYmr0uICEntg', 100);
+
+    $results = $youtube->searchAdvanced(array( /* params */ ));
 
     // Return a std PHP object
     $channel = $youtube->getChannelByName('xdadevelopers');
@@ -52,6 +60,14 @@ Run the Install
 
     // Return an array of PHP objects
     $playlists = $youtube->getPlaylistsByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
+
+    // Return an array of PHP objects
+    $activities = $youtube->getActivitiesByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
+
+    // Parse Youtube URL into videoId
+    $videoId = $youtube->parseVIdFromURL('https://www.youtube.com/watch?v=moSFlvxnbgk');
+    // result: moSFlvxnbgk
+
 
 ## Usage (Laravel Project)
 Add the dependency in the composer.json, then run 
@@ -73,6 +89,22 @@ app/controllers/YoutubeController.php
         }
 
     }
+
+If you want to use this class as "Youtube", you can add an aliases, edit the app/config/app.php,
+Insert the following line:
+    'aliases' => array(
+        ...
+
+        'Youtube'         => 'Madcoda\Youtube',
+    ),
+
+
+## Run Unit Test
+If you have PHPUnit installed in your environment, just run
+    $ phpunit
+If you don't have PHPUnit installed, you can run this
+    $ composer update
+    $ ./vendor/bin/phpunit
 
 
 ## Format of returned data
