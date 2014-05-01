@@ -18,7 +18,8 @@ class Youtube {
         'search.list' => 'https://www.googleapis.com/youtube/v3/search',
         'channels.list' => 'https://www.googleapis.com/youtube/v3/channels',
         'playlists.list' => 'https://www.googleapis.com/youtube/v3/playlists',
-        'activities' => 'https://www.googleapis.com/youtube/v3/activities'
+        'playlistItems.list' => 'https://www.googleapis.com/youtube/v3/playlistItems',
+        'activities' => 'https://www.googleapis.com/youtube/v3/activities',
     );
 
 
@@ -172,6 +173,18 @@ class Youtube {
         );
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeSingle($apiData);
+    }
+
+
+    public function getPlaylistItemsByPlaylistId($playlistId){
+        $API_URL = $this->getApi('playlistItems.list');
+        $params = array(
+            'playlistId' => $playlistId,
+            'part' => 'id, snippet, contentDetails, status',
+            'maxResults' => 50
+        );
+        $apiData = $this->api_get($API_URL, $params);
+        return $this->decodeList($apiData);
     }
 
 

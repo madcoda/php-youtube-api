@@ -56,10 +56,13 @@ Run the Install
     $channel = $youtube->getChannelById('UCk1SpWNzOs4MYmr0uICEntg');
 
     // Return a std PHP object
-    $playlist = $youtube->getPlaylistById('PLgLZvFga2ml60JPoPDDKE7ZN7JPgXGmlu');
+    $playlist = $youtube->getPlaylistById('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs');
 
     // Return an array of PHP objects
     $playlists = $youtube->getPlaylistsByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
+
+    // Return an array of PHP objects
+    $playlistItems = $youtube->getPlaylistItemsByPlaylistId('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs');
 
     // Return an array of PHP objects
     $activities = $youtube->getActivitiesByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
