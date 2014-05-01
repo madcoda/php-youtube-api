@@ -102,8 +102,11 @@ Insert the following line:
 
 ## Run Unit Test
 If you have PHPUnit installed in your environment, just run
+
     $ phpunit
+
 If you don't have PHPUnit installed, you can run this
+
     $ composer update
     $ ./vendor/bin/phpunit
 
