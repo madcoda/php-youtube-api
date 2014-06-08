@@ -14,105 +14,115 @@ Currently will not consider adding OAuth endpoints. (those required "authorized 
 ## Install
 Example composer.json
 
-    {
-	    "name": "MyCoolProject",
-	    "require": {
-	        "madcoda/php-youtube-api" : "dev-master"
-	    }
+```json
+{
+    "name": "MyCoolProject",
+    "require": {
+        "madcoda/php-youtube-api" : "dev-master"
     }
+}
+```
 
 Run the Install
 
-    composer install
+```bash
+$ composer install
 
-    //run "composer update" instead if you already has a composer.json before
-    composer update
-
+# Run "composer update" instead if you already has a composer.json before
+$ composer update
+```
 
 ## Usage (Plain PHP project)
 
-	require 'vendor/autoload.php';
+```php
+require 'vendor/autoload.php';
 
-    $youtube = new Madcoda\Youtube(array('key' => '/* Your API key here */'));
+$youtube = new Madcoda\Youtube(array('key' => '/* Your API key here */'));
 
-    // Return a std PHP object 
-    $video = $youtube->getVideoInfo('rie-hPVJ7Sw');
+// Return a std PHP object 
+$video = $youtube->getVideoInfo('rie-hPVJ7Sw');
 
-    // Search playlists, channels and videos, Return an array of PHP objects
-    $results = $youtube->search('Android');
+// Search playlists, channels and videos, Return an array of PHP objects
+$results = $youtube->search('Android');
 
-    // Search only Videos, Return an array of PHP objects
-    $videoList = $youtube->searchVideos('Android');
+// Search only Videos, Return an array of PHP objects
+$videoList = $youtube->searchVideos('Android');
 
-    // Search only Videos in a given channel, Return an array of PHP objects
-    $videoList = $youtube->searchChannelVideos('keyword', 'UCk1SpWNzOs4MYmr0uICEntg', 100);
+// Search only Videos in a given channel, Return an array of PHP objects
+$videoList = $youtube->searchChannelVideos('keyword', 'UCk1SpWNzOs4MYmr0uICEntg', 100);
 
-    $results = $youtube->searchAdvanced(array( /* params */ ));
+$results = $youtube->searchAdvanced(array( /* params */ ));
 
-    // Return a std PHP object
-    $channel = $youtube->getChannelByName('xdadevelopers');
+// Return a std PHP object
+$channel = $youtube->getChannelByName('xdadevelopers');
 
-    // Return a std PHP object
-    $channel = $youtube->getChannelById('UCk1SpWNzOs4MYmr0uICEntg');
+// Return a std PHP object
+$channel = $youtube->getChannelById('UCk1SpWNzOs4MYmr0uICEntg');
 
-    // Return a std PHP object
-    $playlist = $youtube->getPlaylistById('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs');
+// Return a std PHP object
+$playlist = $youtube->getPlaylistById('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs');
 
-    // Return an array of PHP objects
-    $playlists = $youtube->getPlaylistsByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
+// Return an array of PHP objects
+$playlists = $youtube->getPlaylistsByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
 
-    // Return an array of PHP objects
-    $playlistItems = $youtube->getPlaylistItemsByPlaylistId('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs');
+// Return an array of PHP objects
+$playlistItems = $youtube->getPlaylistItemsByPlaylistId('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs');
 
-    // Return an array of PHP objects
-    $activities = $youtube->getActivitiesByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
+// Return an array of PHP objects
+$activities = $youtube->getActivitiesByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
 
-    // Parse Youtube URL into videoId
-    $videoId = $youtube->parseVIdFromURL('https://www.youtube.com/watch?v=moSFlvxnbgk');
-    // result: moSFlvxnbgk
-
+// Parse Youtube URL into videoId
+$videoId = $youtube->parseVIdFromURL('https://www.youtube.com/watch?v=moSFlvxnbgk');
+// result: moSFlvxnbgk
+```
 
 ## Usage (Laravel Project)
 Add the dependency in the composer.json, then run 
 
-    composer update
+```bash
+$ composer update
+```
 
 Since the Laravel framework also configured to autoload composer dependencies (in bootstrap/autoload.php),
 You don't need to add any require or include statements, just use the class
 
 app/controllers/YoutubeController.php
 
-    class YoutubeController extends BaseController {
+```php
+class YoutubeController extends BaseController {
 
-        public function index()
-        {
-            $youtube = new Madcoda\Youtube(array('key' => '/* Your API key here */'));
-
-            print_r($youtube->getVideoInfo(Input::get('vid')));
-        }
-
+    public function index()
+    {
+        $youtube = new Madcoda\Youtube(array('key' => '/* Your API key here */'));
+	    print_r($youtube->getVideoInfo(Input::get('vid')));
     }
+
+}
+```
 
 If you want to use this class as "Youtube", you can add an aliases, edit the app/config/app.php,
 Insert the following line:
 
-    'aliases' => array(
-        ...
-
-        'Youtube'         => 'Madcoda\Youtube',
-    ),
-
+```php
+'aliases' => array(
+     //...
+    'Youtube' => 'Madcoda\Youtube',
+),
+```
 
 ## Run Unit Test
 If you have PHPUnit installed in your environment, just run
 
-    $ phpunit
+```bash
+$ phpunit
+```
 
 If you don't have PHPUnit installed, you can run this
 
-    $ composer update
-    $ ./vendor/bin/phpunit
-
+```bash
+$ composer update
+$ ./vendor/bin/phpunit
+```
 
 ## Format of returned data
 The returnd json is decoded as PHP objects (not Array).
