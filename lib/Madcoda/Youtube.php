@@ -343,6 +343,13 @@ class Youtube
             }
             throw new \Exception($msg);
         } else {
+            $this->page_info = array(
+                'resultsPerPage' => $resObj->pageInfo->resultsPerPage,
+                'totalResults'   => $resObj->pageInfo->totalResults,
+                'nextPageToken'  => $resObj->nextPageToken,
+                'kind'           => $resObj->kind,
+                'etag'           => $resObj->etag,
+            );
             $itemsArray = $resObj->items;
             if (!is_array($itemsArray) || count($itemsArray) == 0) {
                 return false;
