@@ -135,6 +135,7 @@ class Youtube
      * the API reference
      *
      * @param $params
+     * @param $pageInfo
      * @return array
      * @throws \Exception
      */
@@ -155,6 +156,21 @@ class Youtube
         } else {
             return $this->decodeList($apiData);
         }
+    }
+
+     /**
+     * Generic Search Paginator, use any parameters specified in
+     * the API reference and pass through nextPageToken as $token if set.
+     *
+     * @param $params
+     * @param $token
+     * @return array
+     */
+    public function paginateResults ($params, $token = null) 
+    {
+        if (!is_null($token)) $params['pageToken'] = $token;
+        if (!empty($params))
+            return $this->searchAdvanced($params, true);
     }
 
     /**
