@@ -148,9 +148,9 @@ class Youtube
 
         $apiData = $this->api_get($API_URL, $params);
         if ($pageInfo) {
-            return array(
-                'info'    => $this->page_info,
-                'results' => $this->decodeList($apiData)
+            return array(                
+                'results' => $this->decodeList($apiData),
+                'info'    => $this->page_info
             );
         } else {
             return $this->decodeList($apiData);
