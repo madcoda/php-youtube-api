@@ -26,6 +26,11 @@ class Youtube
     );
 
     /**
+     * @var array
+     */
+    var $page_info = array();
+
+    /**
      * Constructor
      * $youtube = new Youtube(array('key' => 'KEY HERE'))
      *
@@ -133,7 +138,7 @@ class Youtube
      * @return array
      * @throws \Exception
      */
-    public function searchAdvanced($params)
+    public function searchAdvanced($params, $pageInfo = false)
     {
         $API_URL = $this->getApi('search.list');
 
@@ -142,7 +147,14 @@ class Youtube
         }
 
         $apiData = $this->api_get($API_URL, $params);
-        return $this->decodeList($apiData);
+        if ($pageInfo) {
+            return array(
+                'info'    => $this->page_info,
+                'results' => $this->decodeList($apiData)
+            );
+        } else {
+            return $this->decodeList($apiData);
+        }
     }
 
     /**
@@ -357,6 +369,7 @@ class Youtube
             }
             throw new \Exception($msg);
         } else {
+            $this->page_info = $resObj->pageInfo;
             $itemsArray = $resObj->items;
             if (!is_array($itemsArray) || count($itemsArray) == 0) {
                 return false;
