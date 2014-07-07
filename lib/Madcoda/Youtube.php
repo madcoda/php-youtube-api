@@ -26,6 +26,11 @@ class Youtube
     );
 
     /**
+     * @var array
+     */
+    var $page_info = array();
+
+    /**
      * Constructor
      * $youtube = new Youtube(array('key' => 'KEY HERE'))
      *
@@ -130,10 +135,11 @@ class Youtube
      * the API reference
      *
      * @param $params
+     * @param $pageInfo
      * @return array
      * @throws \Exception
      */
-    public function searchAdvanced($params)
+    public function searchAdvanced($params, $pageInfo = false)
     {
         $API_URL = $this->getApi('search.list');
 
@@ -142,7 +148,29 @@ class Youtube
         }
 
         $apiData = $this->api_get($API_URL, $params);
-        return $this->decodeList($apiData);
+        if ($pageInfo) {
+            return array(                
+                'results' => $this->decodeList($apiData),
+                'info'    => $this->page_info
+            );
+        } else {
+            return $this->decodeList($apiData);
+        }
+    }
+
+     /**
+     * Generic Search Paginator, use any parameters specified in
+     * the API reference and pass through nextPageToken as $token if set.
+     *
+     * @param $params
+     * @param $token
+     * @return array
+     */
+    public function paginateResults ($params, $token = null) 
+    {
+        if (!is_null($token)) $params['pageToken'] = $token;
+        if (!empty($params))
+            return $this->searchAdvanced($params, true);
     }
 
     /**
@@ -336,7 +364,7 @@ class Youtube
                 $msg .= " : " . $resObj->error->errors[0]->reason;
             }
             throw new \Exception($msg);
-        } else {
+        } else {           
             $itemsArray = $resObj->items;
             if (!is_array($itemsArray) || count($itemsArray) == 0) {
                 return false;
@@ -363,6 +391,13 @@ class Youtube
             }
             throw new \Exception($msg);
         } else {
+             $this->page_info = array(
+                'resultsPerPage' => $resObj->pageInfo->resultsPerPage,
+                'totalResults'   => $resObj->pageInfo->totalResults,
+                'nextPageToken'  => $resObj->nextPageToken,
+                'kind'           => $resObj->kind,
+                'etag'           => $resObj->etag,
+            );
             $itemsArray = $resObj->items;
             if (!is_array($itemsArray) || count($itemsArray) == 0) {
                 return false;
