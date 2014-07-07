@@ -125,7 +125,6 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('snippet', $response);
         $this->assertObjectHasAttribute('contentDetails', $response);
         $this->assertObjectHasAttribute('statistics', $response);
-        $this->assertObjectHasAttribute('topicDetails', $response);
     }
 
     public function testGetChannelById()
@@ -138,7 +137,6 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('snippet', $response);
         $this->assertObjectHasAttribute('contentDetails', $response);
         $this->assertObjectHasAttribute('statistics', $response);
-        $this->assertObjectHasAttribute('topicDetails', $response);
     }
 
     public function testGetPlaylistsByChannelId()

@@ -150,13 +150,16 @@ class Youtube
      * @return \StdClass
      * @throws \Exception
      */
-    public function getChannelByName($username)
+    public function getChannelByName($username, $optionalParams = false)
     {
         $API_URL = $this->getApi('channels.list');
         $params = array(
             'forUsername' => $username,
-            'part' => 'id,snippet,contentDetails, statistics,topicDetails,invideoPromotion'
+            'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
         );
+        if($optionalParams){
+            $params = array_merge($params, $optionalParams);
+        }
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeSingle($apiData);
     }
@@ -166,13 +169,16 @@ class Youtube
      * @return \StdClass
      * @throws \Exception
      */
-    public function getChannelById($id)
+    public function getChannelById($id, $optionalParams = false)
     {
         $API_URL = $this->getApi('channels.list');
         $params = array(
             'id' => $id,
-            'part' => 'id,snippet,contentDetails, statistics,topicDetails,invideoPromotion'
+            'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
         );
+        if($optionalParams){
+            $params = array_merge($params, $optionalParams);
+        }
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeSingle($apiData);
     }
