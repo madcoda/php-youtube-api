@@ -76,6 +76,73 @@ $videoId = $youtube->parseVIdFromURL('https://www.youtube.com/watch?v=moSFlvxnbg
 // result: moSFlvxnbgk
 ```
 
+## Basic Search Pagination
+```php
+$youtube = new Madcoda\Youtube(array('key' => '/* Your API key here */'));
+
+// Set Default Parameters
+$params = array(
+    'q'             => 'Android',
+    'type'          => 'video',
+    'part'          => 'id, snippet',
+    'maxResults'    => 50
+);
+
+// Make Intial Call. With second argument to reveal page info such as page tokens.
+$search = $youtube->searchAdvanced($params, true);
+
+// check if we have a pageToken
+if (isset($search['info']['nextPageToken'])) {
+    $params['pageToken'] = $search['info']['nextPageToken'];
+}
+
+// Make Another Call and Repeat
+$search = $youtube->searchAdvanced($params, true);          
+
+// add results key with info parameter set
+print_r($search['results']); 
+
+/* Alternative approach with new built in paginateResults function */
+ 
+// Same Params as before
+$params = array(
+    'q'             => 'Android',
+    'type'          => 'video',
+    'part'          => 'id, snippet',
+    'maxResults'    => 50
+);
+
+// an array to store page tokens so we can go back and forth
+$pageTokens   = array();
+
+// make inital search
+$search       = $youtube->paginateResults($params, null);
+
+// store token
+$pageTokens[] = $search['info']['nextPageToken'];
+
+// go to next page in result
+$search       = $youtube->paginateResults($params, $pageTokens[0]);
+
+// store token
+$pageTokens[] = $search['info']['nextPageToken'];
+
+// go to next page in result
+$search       = $youtube->paginateResults($params, $pageTokens[1]);
+
+// store token
+$pageTokens[] = $search['info']['nextPageToken'];
+
+// go back a page
+$search       = $youtube->paginateResults($params, $pageTokens[0]);
+
+// add results key with info parameter set
+print_r($search['results']);
+
+```
+
+The pagination above is quite basic. Depending on what you are trying to achieve; you may want to create a recurssive function that traverses the results.
+
 ## Usage (Laravel Project)
 Add the dependency in the composer.json, then run 
 
