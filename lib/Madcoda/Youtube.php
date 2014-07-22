@@ -394,10 +394,13 @@ class Youtube
              $this->page_info = array(
                 'resultsPerPage' => $resObj->pageInfo->resultsPerPage,
                 'totalResults'   => $resObj->pageInfo->totalResults,
-                'nextPageToken'  => $resObj->nextPageToken,
                 'kind'           => $resObj->kind,
                 'etag'           => $resObj->etag,
             );
+            if(isset($resObj->nextPageToken)){
+                $this->page_info = $resObj->nextPageToken;
+            }
+
             $itemsArray = $resObj->items;
             if (!is_array($itemsArray) || count($itemsArray) == 0) {
                 return false;
