@@ -37,7 +37,9 @@ $ composer update
 ```php
 require 'vendor/autoload.php';
 
-$youtube = new Madcoda\Youtube(array('key' => '/* Your API key here */'));
+use Madcoda\Youtube;
+
+$youtube = new Youtube(array('key' => '/* Your API key here */'));
 
 // Return a std PHP object 
 $video = $youtube->getVideoInfo('rie-hPVJ7Sw');
@@ -78,7 +80,9 @@ $videoId = $youtube->parseVIdFromURL('https://www.youtube.com/watch?v=moSFlvxnbg
 
 ## Basic Search Pagination
 ```php
-$youtube = new Madcoda\Youtube(array('key' => '/* Your API key here */'));
+use Madcoda\Youtube;
+
+$youtube = new Youtube(array('key' => '/* Your API key here */'));
 
 // Set Default Parameters
 $params = array(
