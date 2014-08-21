@@ -294,10 +294,10 @@ class Youtube
     public static function parseVIdFromURL($youtube_url)
     {
         if (strpos($youtube_url, 'youtube.com')) {
-            $params = self::_parse_url_query($youtube_url);
+            $params = static::_parse_url_query($youtube_url);
             return $params['v'];
         } else if (strpos($youtube_url, 'youtu.be')) {
-            $path = self::_parse_url_path($youtube_url);
+            $path = static::_parse_url_path($youtube_url);
             $vid = substr($path, 1);
             return $vid;
         } else {
@@ -318,7 +318,7 @@ class Youtube
             throw new \Exception('The supplied URL does not look like a Youtube URL');
         }
 
-        $path = self::_parse_url_path($youtube_url);
+        $path = static::_parse_url_path($youtube_url);
         if (strpos($path, '/channel') === 0) {
             $segments = explode('/', $path);
             $channelId = $segments[count($segments) - 1];
@@ -467,7 +467,7 @@ class Youtube
         $params = array();
         foreach ($queryParts as $param) {
             $item = explode('=', $param);
-            $params[$item[0]] = $item[1];
+            $params[$item[0]] = empty($item[1]) ? '' : $item[1];
         }
         return $params;
     }
