@@ -396,6 +396,8 @@ class Youtube
                 'totalResults'   => $resObj->pageInfo->totalResults,
                 'kind'           => $resObj->kind,
                 'etag'           => $resObj->etag,
+                'prevPageToken'	 => NULL,
+				'nextPageToken'	 => NULL
             );
             if(isset($resObj->nextPageToken)){
                 $this->page_info['nextPageToken'] = $resObj->nextPageToken;
