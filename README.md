@@ -12,24 +12,10 @@ Currently will not consider adding OAuth endpoints. (those required "authorized 
 
 
 ## Install
-Example composer.json
+Installation is easy with composer just run.
 
-```json
-{
-    "name": "MyCoolProject",
-    "require": {
-        "madcoda/php-youtube-api" : "dev-master"
-    }
-}
-```
-
-Run the Install
-
-```bash
-$ composer install
-
-# Run "composer update" instead if you already has a composer.json before
-$ composer update
+```sh
+composer require madcoda/php-youtube-api
 ```
 
 ## Usage (Plain PHP project)
