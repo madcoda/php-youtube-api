@@ -65,6 +65,24 @@ class Youtube
     }
 
     /**
+     * @param $vIds
+     * @return \StdClass
+     * @throws \Exception
+     */
+    public function getVideosInfo($vIds)
+    {
+        $ids = is_array($vIds) ? implode(',', $vIds) : $vIds;
+        $API_URL = $this->getApi('videos.list');
+        $params = array(
+            'id' => $ids,
+            'part' => 'id, snippet, contentDetails, player, statistics, status'
+        );
+
+        $apiData = $this->api_get($API_URL, $params);
+        return $this->decodeList($apiData);
+    }
+
+    /**
      * Simple search interface, this search all stuffs
      * and order by relevance
      *
