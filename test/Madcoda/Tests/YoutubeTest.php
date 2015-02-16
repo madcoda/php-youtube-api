@@ -82,6 +82,24 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('contentDetails', $response);
     }
 
+    public function testGetVideosInfo()
+    {
+        $vID = array('rie-hPVJ7Sw', 'lRRk97FYLJM');
+        $response = $this->youtube->getVideosInfo($vID);
+        $this->assertInternalType('array', $response);
+        
+        foreach ($response as $value) {
+            $this->assertContains($value->id, $vID);
+            $this->assertEquals('youtube#video', $value->kind);
+            //add all these assertions here in case the api is changed,
+            //we can detect it instantly
+            $this->assertObjectHasAttribute('statistics', $value);
+            $this->assertObjectHasAttribute('status', $value);
+            $this->assertObjectHasAttribute('snippet', $value);
+            $this->assertObjectHasAttribute('contentDetails', $value);
+        }
+    }
+
     public function testSearch()
     {
         $limit = rand(3, 10);
