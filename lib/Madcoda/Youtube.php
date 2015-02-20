@@ -14,6 +14,11 @@ class Youtube
     protected $youtube_key; //pass in by constructor
 
     /**
+     * @var string
+     */
+    protected $referer;
+
+    /**
      * @var array
      */
     var $APIs = array(
@@ -28,7 +33,7 @@ class Youtube
     /**
      * @var array
      */
-    var $page_info = array();
+    public $page_info = array();
 
     /**
      * Constructor
@@ -37,12 +42,19 @@ class Youtube
      * @param array $params
      * @throws \Exception
      */
-    public function __construct($params)
+    public function __construct($params = array())
     {
-        if (is_array($params) && array_key_exists('key', $params)) {
-            $this->youtube_key = $params['key'];
-        } else {
-            throw new \Exception('Google API key is Required, please visit http://code.google.com/apis/console');
+        if (!is_array($params)) {
+            throw new \InvalidArgumentException('The configuration options must be an array.');
+        }
+
+        if (!array_key_exists('key', $params)) {
+            throw new \InvalidArgumentException('Google API key is required, please visit http://code.google.com/apis/console');
+        }
+        $this->youtube_key = $params['key'];
+
+        if (array_key_exists('referer', $params)) {
+            $this->referer = $params['referer'];
         }
     }
 
@@ -453,6 +465,9 @@ class Youtube
             curl_setopt($tuCurl, CURLOPT_PORT, 80);
         } else {
             curl_setopt($tuCurl, CURLOPT_PORT, 443);
+        }
+        if ($this->referer !== null) {
+            curl_setopt($tuCurl, CURLOPT_REFERER, $this->referer);
         }
         curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, 1);
         $tuData = curl_exec($tuCurl);

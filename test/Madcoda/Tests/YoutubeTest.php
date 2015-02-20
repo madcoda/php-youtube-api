@@ -18,7 +18,7 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
     /**
      * @var Youtube
      */
-    var $youtube;
+    protected $youtube;
 
     public function setUp()
     {
@@ -40,7 +40,7 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \InvalidArgumentException
      */
     public function testConstructorFail()
     {
@@ -48,7 +48,7 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \InvalidArgumentException
      */
     public function testConstructorFail2()
     {
