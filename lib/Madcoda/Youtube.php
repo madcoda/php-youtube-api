@@ -393,7 +393,7 @@ class Youtube
             if (isset($resObj->error->errors[0])) {
                 $msg .= " : " . $resObj->error->errors[0]->reason;
             }
-            throw new \Exception($msg);
+            throw new \Exception($msg,$resObj->error->code);
         } else {           
             $itemsArray = $resObj->items;
             if (!is_array($itemsArray) || count($itemsArray) == 0) {
@@ -419,7 +419,7 @@ class Youtube
             if (isset($resObj->error->errors[0])) {
                 $msg .= " : " . $resObj->error->errors[0]->reason;
             }
-            throw new \Exception($msg);
+            throw new \Exception($msg,$resObj->error->code);
         } else {
              $this->page_info = array(
                 'resultsPerPage' => $resObj->pageInfo->resultsPerPage,
@@ -472,7 +472,7 @@ class Youtube
         curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, 1);
         $tuData = curl_exec($tuCurl);
         if (curl_errno($tuCurl)) {
-            throw new \Exception('Curl Error : ' . curl_error($tuCurl));
+            throw new \Exception('Curl Error : ' . curl_error($tuCurl),curl_error($tuCurl));
         }
         return $tuData;
     }
