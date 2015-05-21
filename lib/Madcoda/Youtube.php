@@ -472,7 +472,7 @@ class Youtube
         curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, 1);
         $tuData = curl_exec($tuCurl);
         if (curl_errno($tuCurl)) {
-            throw new \Exception('Curl Error : ' . curl_error($tuCurl));
+            throw new \Exception('Curl Error : ' . curl_error($tuCurl), curl_errno($tuCurl));
         }
         return $tuData;
     }
