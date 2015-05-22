@@ -37,7 +37,7 @@ $results = $youtube->search('Android');
 $videoList = $youtube->searchVideos('Android');
 
 // Search only Videos in a given channel, Return an array of PHP objects
-$videoList = $youtube->searchChannelVideos('keyword', 'UCk1SpWNzOs4MYmr0uICEntg', 100);
+$videoList = $youtube->searchChannelVideos('keyword', 'UCk1SpWNzOs4MYmr0uICEntg', 50);
 
 $results = $youtube->searchAdvanced(array( /* params */ ));
 
