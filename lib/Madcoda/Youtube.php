@@ -323,16 +323,25 @@ class Youtube
      */
     public static function parseVIdFromURL($youtube_url)
     {
+        $videoId = null;
         if (strpos($youtube_url, 'youtube.com')) {
-            $params = static::_parse_url_query($youtube_url);
-            return $params['v'];
+            if (strpos($youtube_url, 'embed')) {
+                $path = static::_parse_url_path($youtube_url);
+                $videoId = substr($path, 7);
+            }
+            if($params = static::_parse_url_query($youtube_url)) {
+                $videoId = isset($params['v']) ? $params['v'] : null;
+            }
         } else if (strpos($youtube_url, 'youtu.be')) {
             $path = static::_parse_url_path($youtube_url);
-            $vid = substr($path, 1);
-            return $vid;
-        } else {
+            $videoId = substr($path, 1);
+        }
+
+        if (empty($videoId)) {
             throw new \Exception('The supplied URL does not look like a Youtube URL');
         }
+
+        return $videoId;
     }
 
     /**
@@ -485,8 +494,7 @@ class Youtube
      */
     public static function _parse_url_path($url)
     {
-        $array = parse_url($url);
-        return $array['path'];
+        return parse_url($url, PHP_URL_PATH);
     }
 
     /**
@@ -497,16 +505,16 @@ class Youtube
      */
     public static function _parse_url_query($url)
     {
-        $array = parse_url($url);
-        $query = $array['query'];
-
-        $queryParts = explode('&', $query);
+        $queryString = parse_url($url, PHP_URL_QUERY);
 
         $params = array();
-        foreach ($queryParts as $param) {
-            $item = explode('=', $param);
-            $params[$item[0]] = empty($item[1]) ? '' : $item[1];
+
+        parse_str($queryString, $params);
+
+        if (is_null($params)) {
+            return array();
         }
-        return $params;
+
+        return array_filter($params);
     }
 }
