@@ -1,5 +1,6 @@
 php-youtube-api
 ===============
+[![Build Status](https://secure.travis-ci.org/madcoda/php-youtube-api.png)](https://travis-ci.org/madcoda/php-youtube-api)
 
 A basic PHP wrapper for the Youtube Data API v3 ( Non-OAuth ). Designed to let devs easily 
 fetch public data (Video, Channel, Playlists info) from Youtube. No 3rd party dependancy. (except PHPUnit)
