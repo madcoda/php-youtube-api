@@ -284,14 +284,36 @@ class Youtube
      */
     public function getPlaylistItemsByPlaylistId($playlistId, $maxResults = 50)
     {
-        $API_URL = $this->getApi('playlistItems.list');
         $params = array(
             'playlistId' => $playlistId,
             'part' => 'id, snippet, contentDetails, status',
             'maxResults' => $maxResults
         );
+        return $this->getPlaylistItemsByPlaylistIdAdvanced($params);
+    }
+
+    /**
+     * @param $params
+     * @param bool|false $pageInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function getPlaylistItemsByPlaylistIdAdvanced($params, $pageInfo = false) {
+        $API_URL = $this->getApi('playlistItems.list');
+
+        if (empty($params) || !isset($params['playlistId'])) {
+            throw new \InvalidArgumentException('at least the playlist id must be supplied');
+        }
+
         $apiData = $this->api_get($API_URL, $params);
-        return $this->decodeList($apiData);
+        if ($pageInfo) {
+            return array(
+                'results' => $this->decodeList($apiData),
+                'info'    => $this->page_info
+            );
+        } else {
+            return $this->decodeList($apiData);
+        }
     }
 
     /**
