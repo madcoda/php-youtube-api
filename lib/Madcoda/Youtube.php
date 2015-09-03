@@ -48,7 +48,7 @@ class Youtube
             throw new \InvalidArgumentException('The configuration options must be an array.');
         }
 
-        if (!array_key_exists('key', $params)) {
+        if (!array_key_exists('key', $params) || empty($params['key']) ) {
             throw new \InvalidArgumentException('Google API key is required, please visit http://code.google.com/apis/console');
         }
         $this->youtube_key = $params['key'];
