@@ -9,6 +9,29 @@ namespace Madcoda;
 class Youtube
 {
 
+    /*
+     * some constants for convenience
+     */
+
+    //order in search api
+    const ORDER_DATE = 'date';
+    const ORDER_RATING = 'rating';
+    const ORDER_RELEVANCE = 'relevance';
+    const ORDER_TITLE = 'title';
+    const ORDER_VIDEOCOUNT = 'videoCount';
+    const ORDER_VIEWCOUNT = 'viewCount';
+
+    //eventType
+    const EVENT_TYPE_LIVE = 'live';
+    const EVENT_TYPE_COMPLETED = 'completed';
+    const EVENT_TYPE_UPCOMING = 'upcoming';
+
+    //type in search api
+    const SEARCH_TYPE_CHANNEL = 'channel';
+    const SEARCH_TYPE_PLAYLIST = 'playlist';
+    const SEARCH_TYPE_VIDEO = 'video';
+
+
     /**
      * @var string
      */
@@ -38,7 +61,7 @@ class Youtube
      * @var array
      */
     public $page_info = array();
-    
+
 
     /**
      * Constructor
@@ -172,6 +195,24 @@ class Youtube
             'part' => 'id, snippet',
             'maxResults' => $maxResults
         );
+        if (!empty($order)) {
+            $params['order'] = $order;
+        }
+
+        return $this->searchAdvanced($params);
+    }
+
+
+    public function searchChannelLiveStream($q, $channelId, $maxResults = 10, $order = null){
+        $params = array(
+            'q' => $q,
+            'type' => 'video',
+            'eventType' => 'live',
+            'channelId' => $channelId,
+            'part' => 'id, snippet',
+            'maxResults' => $maxResults
+        );
+
         if (!empty($order)) {
             $params['order'] = $order;
         }
