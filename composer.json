@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Madcoda": "lib/"
+            "Madcoda": "src/"
         }
     }
 }
