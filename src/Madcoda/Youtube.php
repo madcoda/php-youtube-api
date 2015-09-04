@@ -2,6 +2,8 @@
 
 namespace Madcoda;
 
+use Madcoda\Youtube\Constants;
+
 /**
  * Youtube Data API (mainly apis for retrieving data)
  * @version 0.1
@@ -14,22 +16,22 @@ class Youtube
      */
 
     //order in search api
-    const ORDER_DATE = 'date';
-    const ORDER_RATING = 'rating';
-    const ORDER_RELEVANCE = 'relevance';
-    const ORDER_TITLE = 'title';
-    const ORDER_VIDEOCOUNT = 'videoCount';
-    const ORDER_VIEWCOUNT = 'viewCount';
+    const ORDER_DATE = Constants::ORDER_DATE;
+    const ORDER_RATING = Constants::ORDER_RATING;
+    const ORDER_RELEVANCE = Constants::ORDER_RELEVANCE;
+    const ORDER_TITLE = Constants::ORDER_TITLE;
+    const ORDER_VIDEOCOUNT = Constants::ORDER_VIDEOCOUNT;
+    const ORDER_VIEWCOUNT = Constants::ORDER_VIEWCOUNT;
 
     //eventType
-    const EVENT_TYPE_LIVE = 'live';
-    const EVENT_TYPE_COMPLETED = 'completed';
-    const EVENT_TYPE_UPCOMING = 'upcoming';
+    const EVENT_TYPE_LIVE = Constants::EVENT_TYPE_LIVE;
+    const EVENT_TYPE_COMPLETED = Constants::EVENT_TYPE_COMPLETED;
+    const EVENT_TYPE_UPCOMING = Constants::EVENT_TYPE_UPCOMING;
 
     //type in search api
-    const SEARCH_TYPE_CHANNEL = 'channel';
-    const SEARCH_TYPE_PLAYLIST = 'playlist';
-    const SEARCH_TYPE_VIDEO = 'video';
+    const SEARCH_TYPE_CHANNEL = Constants::SEARCH_TYPE_CHANNEL;
+    const SEARCH_TYPE_PLAYLIST = Constants::SEARCH_TYPE_PLAYLIST;
+    const SEARCH_TYPE_VIDEO = Constants::SEARCH_TYPE_VIDEO;
 
 
     /**
