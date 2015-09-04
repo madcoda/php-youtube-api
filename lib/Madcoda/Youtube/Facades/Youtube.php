@@ -9,7 +9,7 @@ class Youtube extends Facade
 
     protected static function getFacadeAccessor()
     {
-        return 'youtube';
+        return 'Madcoda\Youtube';
     }
 
 }

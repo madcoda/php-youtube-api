@@ -33,7 +33,7 @@ class YoutubeServiceProviderLaravel4 extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app->bindShared('youtube', function($app){
+		$this->app->bindShared('Madcoda\Youtube', function($app){
 			return new Youtube($app['config']->get('youtube::youtube'));
 		});
 	}
@@ -45,7 +45,7 @@ class YoutubeServiceProviderLaravel4 extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('youtube');
+		return array('Madcoda\Youtube');
 	}
 
 }
