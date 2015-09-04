@@ -8,15 +8,18 @@ namespace Madcoda;
  */
 class Youtube
 {
+
     /**
      * @var string
      */
     protected $youtube_key; //pass in by constructor
 
+
     /**
      * @var string
      */
     protected $referer;
+
 
     /**
      * @var array
@@ -30,10 +33,12 @@ class Youtube
         'activities' => 'https://www.googleapis.com/youtube/v3/activities',
     );
 
+
     /**
      * @var array
      */
     public $page_info = array();
+    
 
     /**
      * Constructor
@@ -79,13 +84,13 @@ class Youtube
         $API_URL = $this->getApi('videos.list');
         $params = array(
             'id' => $vId,
-            'key' => $this->youtube_key,
             'part' => 'id, snippet, contentDetails, player, statistics, status'
         );
 
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeSingle($apiData);
     }
+
 
     /**
      * @param $vIds
@@ -105,6 +110,7 @@ class Youtube
         return $this->decodeList($apiData);
     }
 
+
     /**
      * Simple search interface, this search all stuffs
      * and order by relevance
@@ -122,6 +128,7 @@ class Youtube
         );
         return $this->searchAdvanced($params);
     }
+
 
     /**
      * Search only videos
@@ -145,6 +152,7 @@ class Youtube
 
         return $this->searchAdvanced($params);
     }
+
 
     /**
      * Search only videos in the channel
@@ -170,6 +178,7 @@ class Youtube
 
         return $this->searchAdvanced($params);
     }
+
 
     /**
      * Generic Search interface, use any parameters specified in
@@ -199,7 +208,8 @@ class Youtube
         }
     }
 
-     /**
+
+    /**
      * Generic Search Paginator, use any parameters specified in
      * the API reference and pass through nextPageToken as $token if set.
      *
@@ -213,6 +223,7 @@ class Youtube
         if (!empty($params))
             return $this->searchAdvanced($params, true);
     }
+
 
     /**
      * @param $username
@@ -233,6 +244,7 @@ class Youtube
         return $this->decodeSingle($apiData);
     }
 
+
     /**
      * @param $id
      * @return \StdClass
@@ -251,6 +263,7 @@ class Youtube
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeSingle($apiData);
     }
+
 
     /**
      * @param $channelId
@@ -272,6 +285,7 @@ class Youtube
         return $this->decodeList($apiData);
     }
 
+
     /**
      * @param $id
      * @return \StdClass
@@ -288,6 +302,7 @@ class Youtube
         return $this->decodeSingle($apiData);
     }
 
+
     /**
      * @param $playlistId
      * @return array
@@ -302,6 +317,7 @@ class Youtube
         );
         return $this->getPlaylistItemsByPlaylistIdAdvanced($params);
     }
+
 
     /**
      * @param $params
@@ -327,6 +343,7 @@ class Youtube
         }
     }
 
+
     /**
      * @param $channelId
      * @return array
@@ -345,6 +362,7 @@ class Youtube
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeList($apiData);
     }
+
 
     /**
      * Parse a youtube URL to get the youtube Vid.
@@ -377,6 +395,7 @@ class Youtube
         return $videoId;
     }
 
+
     /**
      * Get the channel object by supplying the URL of the channel page
      *
@@ -406,6 +425,7 @@ class Youtube
         return $channel;
     }
 
+
     /*
      *  Internally used Methods, set visibility to public to enable more flexibility
      */
@@ -418,6 +438,7 @@ class Youtube
     {
         return $this->APIs[$name];
     }
+
 
     /**
      * Decode the response from youtube, extract the single resource object.
@@ -445,6 +466,7 @@ class Youtube
             }
         }
     }
+
 
     /**
      * Decode the response from youtube, extract the list of resource objects
@@ -487,6 +509,7 @@ class Youtube
         }
     }
 
+
     /**
      * Using CURL to issue a GET request
      *
@@ -519,6 +542,7 @@ class Youtube
         return $tuData;
     }
 
+
     /**
      * Parse the input url string and return just the path part
      *
@@ -529,6 +553,7 @@ class Youtube
     {
         return parse_url($url, PHP_URL_PATH);
     }
+
 
     /**
      * Parse the input url string and return an array of query params
@@ -550,4 +575,6 @@ class Youtube
 
         return array_filter($params);
     }
+
+
 }
