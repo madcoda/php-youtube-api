@@ -13,174 +13,20 @@ Currently will not consider adding OAuth endpoints. (those required "authorized 
 
 
 ## Install
-Installation is easy with composer just run.
+Edit your `composer.json` and add this to the `require` section
+```
+"madcoda/php-youtube-api": "1.*"
+```
 
 ```sh
-composer require madcoda/php-youtube-api
+composer update
 ```
 
-## Usage (Plain PHP project)
+## Getting started
+Please read the wiki on how to use this library with [PHP with composer](https://github.com/madcoda/php-youtube-api/wiki/started-with-php-composer), [Laravel 4](https://github.com/madcoda/php-youtube-api/wiki/started-with-laravel-4) and [Laravel 5](https://github.com/madcoda/php-youtube-api/wiki/started-with-laravel-5).
 
-```php
-require 'vendor/autoload.php';
+For the functions implemented in this library, please visis [API Reference](https://github.com/madcoda/php-youtube-api/wiki/api-reference)
 
-use Madcoda\Youtube;
-
-$youtube = new Youtube(array('key' => '/* Your API key here */'));
-
-// Return a std PHP object 
-$video = $youtube->getVideoInfo('rie-hPVJ7Sw');
-
-// Search playlists, channels and videos, Return an array of PHP objects
-$results = $youtube->search('Android');
-
-// Search only Videos, Return an array of PHP objects
-$videoList = $youtube->searchVideos('Android');
-
-// Search only Videos in a given channel, Return an array of PHP objects
-$videoList = $youtube->searchChannelVideos('keyword', 'UCk1SpWNzOs4MYmr0uICEntg', 50);
-
-$results = $youtube->searchAdvanced(array( /* params */ ));
-
-// Return a std PHP object
-$channel = $youtube->getChannelByName('xdadevelopers');
-
-// Return a std PHP object
-$channel = $youtube->getChannelById('UCk1SpWNzOs4MYmr0uICEntg');
-
-// Return a std PHP object
-$playlist = $youtube->getPlaylistById('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs');
-
-// Return an array of PHP objects
-$playlists = $youtube->getPlaylistsByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
-
-// Return an array of PHP objects
-$playlistItems = $youtube->getPlaylistItemsByPlaylistId('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs');
-
-// Return an array of PHP objects
-$activities = $youtube->getActivitiesByChannelId('UCk1SpWNzOs4MYmr0uICEntg');
-
-// Parse Youtube URL into videoId
-$videoId = $youtube->parseVIdFromURL('https://www.youtube.com/watch?v=moSFlvxnbgk');
-// result: moSFlvxnbgk
-```
-
-## Basic Search Pagination
-```php
-use Madcoda\Youtube;
-
-$youtube = new Youtube(array('key' => '/* Your API key here */'));
-
-// Set Default Parameters
-$params = array(
-    'q'             => 'Android',
-    'type'          => 'video',
-    'part'          => 'id, snippet',
-    'maxResults'    => 50
-);
-
-// Make Intial Call. With second argument to reveal page info such as page tokens.
-$search = $youtube->searchAdvanced($params, true);
-
-// check if we have a pageToken
-if (isset($search['info']['nextPageToken'])) {
-    $params['pageToken'] = $search['info']['nextPageToken'];
-}
-
-// Make Another Call and Repeat
-$search = $youtube->searchAdvanced($params, true);          
-
-// add results key with info parameter set
-print_r($search['results']); 
-
-/* Alternative approach with new built in paginateResults function */
- 
-// Same Params as before
-$params = array(
-    'q'             => 'Android',
-    'type'          => 'video',
-    'part'          => 'id, snippet',
-    'maxResults'    => 50
-);
-
-// an array to store page tokens so we can go back and forth
-$pageTokens   = array();
-
-// make inital search
-$search       = $youtube->paginateResults($params, null);
-
-// store token
-$pageTokens[] = $search['info']['nextPageToken'];
-
-// go to next page in result
-$search       = $youtube->paginateResults($params, $pageTokens[0]);
-
-// store token
-$pageTokens[] = $search['info']['nextPageToken'];
-
-// go to next page in result
-$search       = $youtube->paginateResults($params, $pageTokens[1]);
-
-// store token
-$pageTokens[] = $search['info']['nextPageToken'];
-
-// go back a page
-$search       = $youtube->paginateResults($params, $pageTokens[0]);
-
-// add results key with info parameter set
-print_r($search['results']);
-
-```
-
-The pagination above is quite basic. Depending on what you are trying to achieve; you may want to create a recurssive function that traverses the results.
-
-## Usage (Laravel Project)
-Add the dependency in the composer.json, then run 
-
-```bash
-$ composer update
-```
-
-Since the Laravel framework also configured to autoload composer dependencies (in bootstrap/autoload.php),
-You don't need to add any require or include statements, just use the class
-
-app/controllers/YoutubeController.php
-
-```php
-class YoutubeController extends BaseController {
-
-    public function index()
-    {
-        $youtube = new Madcoda\Youtube(array('key' => '/* Your API key here */'));
-	    print_r($youtube->getVideoInfo(Input::get('vid')));
-    }
-
-}
-```
-
-If you want to use this class as "Youtube", you can add an aliases, edit the app/config/app.php,
-Insert the following line:
-
-```php
-'aliases' => array(
-     //...
-    'Youtube' => 'Madcoda\Youtube',
-),
-```
-
-## Run Unit Test
-If you have PHPUnit installed in your environment, just run
-
-```bash
-$ phpunit
-```
-
-If you don't have PHPUnit installed, you can run this
-
-```bash
-$ composer update
-$ ./vendor/bin/phpunit
-```
 
 ## Format of returned data
 The returnd json is decoded as PHP objects (not Array).
