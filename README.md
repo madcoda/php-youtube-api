@@ -9,23 +9,26 @@ to use this library, instead of learning my set of API again (Keep it simple).
 
 Well...actually some parameters are missing in this library, because I don't need them at this point, if you desire a particular feature please file an issue here :)
 
-Currently will not consider adding OAuth endpoints. (those required "authorized request")
+Currently I will not consider adding OAuth endpoints. (those required "authorized request" will not be supported)
 
+## Requirements
+* PHP >=5.3
+* CURL extension in PHP
 
 ## Install
 Edit your `composer.json` and add this to the `require` section
-```
+```json
 "madcoda/php-youtube-api": "1.*"
 ```
-
+then run the following command in your command line shell
 ```sh
-composer update
+$ composer update
 ```
 
 ## Getting started
 Please read the wiki on how to use this library with [PHP with composer](https://github.com/madcoda/php-youtube-api/wiki/started-with-php-composer), [Laravel 4](https://github.com/madcoda/php-youtube-api/wiki/started-with-laravel-4) and [Laravel 5](https://github.com/madcoda/php-youtube-api/wiki/started-with-laravel-5).
 
-For the functions implemented in this library, please visis [API Reference](https://github.com/madcoda/php-youtube-api/wiki/api-reference)
+For the functions implemented in this library, please visit [API Reference](https://github.com/madcoda/php-youtube-api/wiki/api-reference)
 
 
 ## Format of returned data
@@ -38,5 +41,11 @@ Please read the ["Reference" section](https://developers.google.com/youtube/v3/d
 - [Obtain API key from Google API Console](http://code.google.com/apis/console)
 
 ## Contact
+
 For bugs, complain and suggestions please [file an Issue here](https://github.com/madcoda/php-youtube-api/issues) 
 or send email to jason@madcoda.com :)
+
+
+## License
+
+Madcoda php-youtube-api is licensed under the [MIT License](http://opensource.org/licenses/MIT).
