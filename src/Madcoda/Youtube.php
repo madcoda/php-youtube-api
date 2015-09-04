@@ -87,7 +87,7 @@ class Youtube
         if (array_key_exists('referer', $params)) {
             $this->setReferer($params['referer']);
         }
-        }
+        
     }
 
 
