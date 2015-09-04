@@ -58,6 +58,17 @@ class Youtube
         }
     }
 
+
+    /**
+     * Update the API key, useful if you want to switch
+     * multiple keys to avoid quota problem
+     */
+    public function setApiKey($apiKey)
+    {
+        $this->youtube_key = $apiKey;
+    }
+
+
     /**
      * @param $vId
      * @return \StdClass
