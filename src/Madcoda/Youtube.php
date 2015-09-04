@@ -35,9 +35,10 @@ class Youtube
 
 
     /**
+     * The API Key
      * @var string
      */
-    protected $youtube_key; //pass in by constructor
+    protected $youtube_key;
 
 
     /**
@@ -81,10 +82,11 @@ class Youtube
         if (!array_key_exists('key', $params) || empty($params['key']) ) {
             throw new \InvalidArgumentException('Google API key is required, please visit http://code.google.com/apis/console');
         }
-        $this->youtube_key = $params['key'];
+        $this->setApiKey($params['key']);
 
         if (array_key_exists('referer', $params)) {
-            $this->referer = $params['referer'];
+            $this->setReferer($params['referer']);
+        }
         }
     }
 
@@ -92,12 +94,18 @@ class Youtube
     /**
      * Update the API key, useful if you want to switch
      * multiple keys to avoid quota problem
+     * @param $apiKey
      */
     public function setApiKey($apiKey)
     {
         $this->youtube_key = $apiKey;
     }
 
+
+
+    public function setReferer($referer){
+        $this->referer = $referer;
+    }
 
     /**
      * @param $vId
