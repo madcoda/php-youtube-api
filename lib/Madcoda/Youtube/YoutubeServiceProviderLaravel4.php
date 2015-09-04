@@ -23,7 +23,7 @@ class YoutubeServiceProviderLaravel4 extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('madcoda/youtube');
+		$this->package('madcoda/php-youtube-api');
 	}
 
 	/**
@@ -34,7 +34,7 @@ class YoutubeServiceProviderLaravel4 extends ServiceProvider {
 	public function register()
 	{
 		$this->app->bindShared('Madcoda\Youtube', function($app){
-			return new Youtube($app['config']->get('youtube::youtube'));
+			return new Youtube($app['config']->get('php-youtube-api::youtube'));
 		});
 	}
 
