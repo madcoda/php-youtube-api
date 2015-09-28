@@ -588,11 +588,6 @@ class Youtube
         //boilerplates for CURL
         $tuCurl = curl_init();
         curl_setopt($tuCurl, CURLOPT_URL, $url . (strpos($url, '?') === false ? '?' : '') . http_build_query($params));
-        if (strpos($url, 'https') === false) {
-            curl_setopt($tuCurl, CURLOPT_PORT, 80);
-        } else {
-            curl_setopt($tuCurl, CURLOPT_PORT, 443);
-        }
         if ($this->referer !== null) {
             curl_setopt($tuCurl, CURLOPT_REFERER, $this->referer);
         }
