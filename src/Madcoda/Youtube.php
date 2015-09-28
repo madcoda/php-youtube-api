@@ -87,7 +87,11 @@ class Youtube
         if (array_key_exists('referer', $params)) {
             $this->setReferer($params['referer']);
         }
-        
+
+        if (array_key_exists('apis', $params)) {
+            $this->setAPIs($params['apis']);
+        }
+
     }
 
 
@@ -101,6 +105,13 @@ class Youtube
         $this->youtube_key = $apiKey;
     }
 
+    /**
+     * Override the API urls, so you can set them from a config
+     * @param array $APIs
+     */
+    public function setAPIs(array $APIs) {
+        $this->APIs = $APIs;
+    }
 
 
     public function setReferer($referer){
