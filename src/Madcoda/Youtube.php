@@ -87,7 +87,11 @@ class Youtube
         if (array_key_exists('referer', $params)) {
             $this->setReferer($params['referer']);
         }
-        
+
+        if (array_key_exists('apis', $params)) {
+            $this->setAPIs($params['apis']);
+        }
+
     }
 
 
@@ -101,6 +105,13 @@ class Youtube
         $this->youtube_key = $apiKey;
     }
 
+    /**
+     * Override the API urls, so you can set them from a config
+     * @param array $APIs
+     */
+    public function setAPIs(array $APIs) {
+        $this->APIs = $APIs;
+    }
 
 
     public function setReferer($referer){
@@ -577,11 +588,6 @@ class Youtube
         //boilerplates for CURL
         $tuCurl = curl_init();
         curl_setopt($tuCurl, CURLOPT_URL, $url . (strpos($url, '?') === false ? '?' : '') . http_build_query($params));
-        if (strpos($url, 'https') === false) {
-            curl_setopt($tuCurl, CURLOPT_PORT, 80);
-        } else {
-            curl_setopt($tuCurl, CURLOPT_PORT, 443);
-        }
         if ($this->referer !== null) {
             curl_setopt($tuCurl, CURLOPT_REFERER, $this->referer);
         }
