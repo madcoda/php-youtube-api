@@ -1,8 +1,6 @@
 <?php
 
-namespace Madcoda\Tests;
-
-require_once(__DIR__ . '/../../../vendor/autoload.php');
+namespace Madcoda\Youtube\Tests;
 
 use Madcoda\Youtube;
 
