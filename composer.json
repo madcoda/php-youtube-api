@@ -21,8 +21,9 @@
         "phpunit/phpunit": "3.7.*@stable"
     },
     "autoload": {
-        "psr-0": {
-            "Madcoda": "src/"
-        }
+        "psr-4": {
+            "Madcoda\\Youtube\\": "src"
+        },
+        "classmap": ["src/compat.php"]
     }
 }

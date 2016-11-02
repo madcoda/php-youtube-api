@@ -1,6 +1,6 @@
 <?php
 
-namespace Madcoda;
+namespace Madcoda\Youtube;
 
 use Madcoda\Youtube\Constants;
 
