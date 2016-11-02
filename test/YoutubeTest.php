@@ -20,7 +20,9 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        // !!!!! DO NOT USE THIS API KEY FOR PRODUCTION USE !!!!! */
         $TEST_API_KEY = 'AIzaSyDDefsgXEZu57wYgABF7xEURClu4UAzyB8';
+        // !!!!! THIS KEY WOULD BE REVOKED BY AUTHOR ANYTIME !!!!! */
         $this->youtube = new Youtube(array('key' => $TEST_API_KEY));
     }
 
