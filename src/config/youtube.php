@@ -2,10 +2,10 @@
 
 return array(
 
-	/*
-	 *  You can set the API Key here
-	 */
+    /*
+     *  You can set the API Key here
+     */
 
-	'key' => null
+    'key' => null
 
 );

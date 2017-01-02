@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php">
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
+    backupGlobals="false"
+    colors="true"
+    bootstrap="vendor/autoload.php"
+    >
     <testsuites>
         <testsuite name="PHP-Youtube-API Test Suite">
-            <directory>./test</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
+
     <filter>
         <whitelist>
-            <directory suffix=".php">./lib/Madcoda</directory>
+            <directory>src</directory>
         </whitelist>
     </filter>
-    <logging>
-        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-    </logging>
 </phpunit>
-
