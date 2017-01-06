@@ -1,16 +1,25 @@
 language: php
 
 php:
+  - 5.3
   - 5.4
   - 5.5
   - 5.6
   - 7.0
   - 7.1
   - hhvm
+  - nightly
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: nightly
 
 before_script:
-  - composer dumpautoload
+  - composer update --prefer-dist
 
 script:
-  - phpunit
+  - vendor/bin/phpunit --coverage-clover=coverage.xml
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

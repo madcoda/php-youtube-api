@@ -8,7 +8,7 @@ namespace Madcoda\Youtube;
 class Constants
 {
 
-	//order in search api
+    //order in search api
     const ORDER_DATE = 'date';
     const ORDER_RATING = 'rating';
     const ORDER_RELEVANCE = 'relevance';
@@ -25,5 +25,4 @@ class Constants
     const SEARCH_TYPE_CHANNEL = 'channel';
     const SEARCH_TYPE_PLAYLIST = 'playlist';
     const SEARCH_TYPE_VIDEO = 'video';
-
 }

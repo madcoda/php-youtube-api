@@ -7,7 +7,6 @@ use Illuminate\Support\ServiceProvider;
 
 class YoutubeServiceProviderLaravel5 extends ServiceProvider
 {
-
     protected $defer = true;
 
     /**
@@ -17,8 +16,9 @@ class YoutubeServiceProviderLaravel5 extends ServiceProvider
      */
     public function boot()
     {
+        $publishPath = $this->app['path.config'] . __DIR__ . '/config/youtube.php';
         $this->publishes([
-            __DIR__.'/config/youtube.php' => config_path('youtube.php'),
+            __DIR__.'/config/youtube.php' => $publishPath,
         ]);
     }
 
@@ -44,6 +44,4 @@ class YoutubeServiceProviderLaravel5 extends ServiceProvider
     {
         return ['Madcoda\Youtube'];
     }
-
-
 }
