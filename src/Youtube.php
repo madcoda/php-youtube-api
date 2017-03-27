@@ -338,6 +338,24 @@ class Youtube
         return $this->decodeSingle($apiData);
     }
 
+    /**
+     * @param array $ids
+     * @return \StdClass
+     * @throws \Exception
+     */
+    public function getChannelsById($ids = array(), $optionalParams = false)
+    {
+        $API_URL = $this->getApi('channels.list');
+        $params = array(
+            'id' => implode(',', $ids),
+            'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
+        );
+        if($optionalParams){
+            $params = array_merge($params, $optionalParams);
+        }
+        $apiData = $this->api_get($API_URL, $params);
+        return $this->decodeList($apiData);
+    }
 
     /**
      * @param $channelId

@@ -225,6 +225,19 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('statistics', $response);
     }
 
+    public function testGetChannelsById()
+    {
+        $channels = array('UCk1SpWNzOs4MYmr0uICEntg', 'UCK8sQmJBp8GCxrOtXWBpyEA');
+        $response = $this->youtube->getChannelsById($channels, $this->optionParams);
+
+        $this->assertTrue(count($response) === 2);
+        $this->assertEquals('youtube#channel', $response[0]->kind);
+        $this->assertObjectHasAttribute('snippet', $response[0]);
+        $this->assertObjectHasAttribute('contentDetails', $response[0]);
+        $this->assertObjectHasAttribute('statistics', $response[0]);
+    }
+
+
     public function testGetPlaylistsByChannelId()
     {
         $GOOGLE_CHANNELID = 'UCK8sQmJBp8GCxrOtXWBpyEA';
