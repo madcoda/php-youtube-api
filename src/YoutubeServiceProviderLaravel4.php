@@ -3,7 +3,7 @@
 namespace Madcoda\Youtube;
 
 use Config;
-use Madcoda\Youtube;
+use Madcoda\Youtube\Youtube;
 use Illuminate\Support\ServiceProvider;
 
 class YoutubeServiceProviderLaravel4 extends ServiceProvider
