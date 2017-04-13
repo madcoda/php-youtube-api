@@ -28,7 +28,7 @@ class YoutubeServiceProviderLaravel5 extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('Madcoda\Youtube', function ($app) {
+        $this->app->bind('Madcoda\Youtube\Youtube', function ($app) {
             return new Youtube($app['config']->get('youtube'));
         });
     }
@@ -41,6 +41,6 @@ class YoutubeServiceProviderLaravel5 extends ServiceProvider
      */
     public function provides()
     {
-        return ['Madcoda\Youtube'];
+        return ['Madcoda\Youtube\Youtube'];
     }
 }
