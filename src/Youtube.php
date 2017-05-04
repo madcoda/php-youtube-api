@@ -442,7 +442,7 @@ class Youtube
      * @return array
      * @throws \Exception
      */
-    public function getActivitiesByChannelId($channelId)
+    public function getActivitiesByChannelId($channelId, $optionalParams = false)
     {
         if (empty($channelId)) {
             throw new \InvalidArgumentException('ChannelId must be supplied');
@@ -452,6 +452,9 @@ class Youtube
             'channelId' => $channelId,
             'part' => 'id, snippet, contentDetails'
         );
+        if ($optionalParams) {
+            $params = array_merge($params, $optionalParams);
+        }
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeList($apiData);
     }
