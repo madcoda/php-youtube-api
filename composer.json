@@ -1,5 +1,5 @@
 {
-    "name": "madcoda/php-youtube-api",
+    "name": "scrobot/php-youtube-api",
     "type": "library",
     "minimum-stability": "dev",
     "description": "PHP wrapper for the Youtube Data API v3",
