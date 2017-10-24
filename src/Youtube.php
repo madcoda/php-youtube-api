@@ -148,16 +148,18 @@ class Youtube
 
     /**
      * @param $vIds
+     * @param array $parts
      * @return \StdClass
-     * @throws \Exception
      */
-    public function getVideosInfo($vIds)
+    public function getVideosInfo($vIds, array $parts)
     {
+        $partArray = $this->fillParts(['id', 'snippet', 'contentDetails', 'player', 'statistics', 'status'], $parts);
+
         $ids = is_array($vIds) ? implode(',', $vIds) : $vIds;
         $API_URL = $this->getApi('videos.list');
         $params = array(
             'id' => $ids,
-            'part' => 'id, snippet, contentDetails, player, statistics, status'
+            'part' => implode(",", $partArray),
         );
 
         $apiData = $this->api_get($API_URL, $params);
@@ -301,15 +303,18 @@ class Youtube
 
     /**
      * @param $username
+     * @param bool $optionalParams
+     * @param array $parts
      * @return \StdClass
-     * @throws \Exception
      */
-    public function getChannelByName($username, $optionalParams = false)
+    public function getChannelByName($username, $optionalParams = false, array $parts)
     {
+        $partArray = $this->fillParts(['id', 'snippet', 'contentDetails', 'invideoPromotion', 'statistics'], $parts);
+
         $API_URL = $this->getApi('channels.list');
         $params = array(
             'forUsername' => $username,
-            'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
+            'part' => implode(",", $partArray)
         );
         if ($optionalParams) {
             $params = array_merge($params, $optionalParams);
@@ -321,15 +326,18 @@ class Youtube
 
     /**
      * @param $id
+     * @param bool $optionalParams
+     * @param array $parts
      * @return \StdClass
-     * @throws \Exception
      */
-    public function getChannelById($id, $optionalParams = false)
+    public function getChannelById($id, $optionalParams = false, array $parts)
     {
+        $partArray = $this->fillParts(['id', 'snippet', 'contentDetails', 'invideoPromotion', 'statistics'], $parts);
+
         $API_URL = $this->getApi('channels.list');
         $params = array(
             'id' => $id,
-            'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
+            'part' => implode(",", $partArray)
         );
         if ($optionalParams) {
             $params = array_merge($params, $optionalParams);
@@ -671,5 +679,19 @@ class Youtube
         }
 
         return array_filter($params);
+    }
+
+    /**
+     * @param array $defaultParts
+     * @param array $parts
+     * @return array
+     */
+    private function fillParts(array $defaultParts, array $parts)
+    {
+        if (!empty($parts)) {
+            return array_unique(array_merge($defaultParts, $parts));
+        }
+
+        return $defaultParts;
     }
 }
