@@ -16,7 +16,7 @@
         }
     ],
     "support":{
-            "email":"jason@madcoda.com",
+            "email":"jason@madcoda.com",e
             "issues":"https://github.com/madcoda/php-youtube-api/issues"
     },
     "require": {
