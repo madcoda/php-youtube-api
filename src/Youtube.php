@@ -151,7 +151,7 @@ class Youtube
      * @param array $parts
      * @return \StdClass
      */
-    public function getVideosInfo($vIds, array $parts)
+    public function getVideosInfo($vIds, array $parts = [])
     {
         $partArray = $this->fillParts(['id', 'snippet', 'contentDetails', 'player', 'statistics', 'status'], $parts);
 
@@ -307,7 +307,7 @@ class Youtube
      * @param array $parts
      * @return \StdClass
      */
-    public function getChannelByName($username, $optionalParams = false, array $parts)
+    public function getChannelByName($username, $optionalParams = false, array $parts = [])
     {
         $partArray = $this->fillParts(['id', 'snippet', 'contentDetails', 'invideoPromotion', 'statistics'], $parts);
 
@@ -330,19 +330,21 @@ class Youtube
      * @param array $parts
      * @return \StdClass
      */
-    public function getChannelById($id, $optionalParams = false, array $parts)
+    public function getChannelById($id, $optionalParams = false, array $parts = [])
     {
         $partArray = $this->fillParts(['id', 'snippet', 'contentDetails', 'invideoPromotion', 'statistics'], $parts);
-
         $API_URL = $this->getApi('channels.list');
         $params = array(
             'id' => $id,
             'part' => implode(",", $partArray)
         );
+
         if ($optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
+
         $apiData = $this->api_get($API_URL, $params);
+
         return $this->decodeSingle($apiData);
     }
 
@@ -624,9 +626,9 @@ class Youtube
      */
     public function api_get($url, $params)
     {
+
         //set the youtube key
         $params['key'] = $this->youtube_key;
-
         //boilerplates for CURL
         $tuCurl = curl_init();
         if ($this->sslPath !== null) {
@@ -641,9 +643,11 @@ class Youtube
         }
         curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, 1);
         $tuData = curl_exec($tuCurl);
+
         if (curl_errno($tuCurl)) {
             throw new \Exception('Curl Error : ' . curl_error($tuCurl), curl_errno($tuCurl));
         }
+
         return $tuData;
     }
 
