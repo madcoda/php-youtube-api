@@ -1,6 +1,7 @@
 {
-    "name": "madcoda/php-youtube-api",
+    "name": "scrobot/php-youtube-api",
     "type": "library",
+    "minimum-stability": "dev",
     "description": "PHP wrapper for the Youtube Data API v3",
     "keywords": ["youtube", "api", "video", "madcoda"],
     "license": "MIT",
@@ -8,6 +9,10 @@
         {
             "name": "Madcoda",
             "email": "jason@madcoda.com"
+        },
+        {
+            "name": "Scrobot",
+            "email": "scrobot91@gmail.com"
         }
     ],
     "support":{
