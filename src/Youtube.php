@@ -133,13 +133,16 @@ class Youtube
      * @return \StdClass
      * @throws \Exception
      */
-    public function getVideoInfo($vId)
+    public function getVideoInfo($vId, $optionalParams = [])
     {
         $API_URL = $this->getApi('videos.list');
         $params = array(
             'id' => $vId,
             'part' => 'id, snippet, contentDetails, player, statistics, status'
         );
+        if (count($optionalParams)) {
+            $params = array_merge($params, $optionalParams);
+        }
 
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeSingle($apiData);
@@ -304,14 +307,14 @@ class Youtube
      * @return \StdClass
      * @throws \Exception
      */
-    public function getChannelByName($username, $optionalParams = false)
+    public function getChannelByName($username, $optionalParams = [])
     {
         $API_URL = $this->getApi('channels.list');
         $params = array(
             'forUsername' => $username,
             'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
         );
-        if ($optionalParams) {
+        if (count($optionalParams)) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -324,14 +327,14 @@ class Youtube
      * @return \StdClass
      * @throws \Exception
      */
-    public function getChannelById($id, $optionalParams = false)
+    public function getChannelById($id, $optionalParams = [])
     {
         $API_URL = $this->getApi('channels.list');
         $params = array(
             'id' => $id,
             'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
         );
-        if ($optionalParams) {
+        if (count($optionalParams)) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -343,14 +346,14 @@ class Youtube
      * @return \StdClass
      * @throws \Exception
      */
-    public function getChannelsById($ids = array(), $optionalParams = false)
+    public function getChannelsById($ids = array(), $optionalParams = [])
     {
         $API_URL = $this->getApi('channels.list');
         $params = array(
             'id' => implode(',', $ids),
             'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
         );
-        if($optionalParams){
+        if (count($optionalParams)) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -363,14 +366,14 @@ class Youtube
      * @return array
      * @throws \Exception
      */
-    public function getPlaylistsByChannelId($channelId, $optionalParams = array())
+    public function getPlaylistsByChannelId($channelId, $optionalParams = [])
     {
         $API_URL = $this->getApi('playlists.list');
         $params = array(
             'channelId' => $channelId,
             'part' => 'id, snippet, status'
         );
-        if ($optionalParams) {
+        if (count($optionalParams)) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -442,7 +445,7 @@ class Youtube
      * @return array
      * @throws \Exception
      */
-    public function getActivitiesByChannelId($channelId, $optionalParams = false)
+    public function getActivitiesByChannelId($channelId, $optionalParams = [])
     {
         if (empty($channelId)) {
             throw new \InvalidArgumentException('ChannelId must be supplied');
@@ -452,7 +455,7 @@ class Youtube
             'channelId' => $channelId,
             'part' => 'id, snippet, contentDetails'
         );
-        if ($optionalParams) {
+        if (count($optionalParams)) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -485,7 +488,7 @@ class Youtube
         }
 
         if (empty($videoId)) {
-            throw new \Exception('The supplied URL does not look like a Youtube URL');
+            throw new \InvalidArgumentException('The supplied URL does not look like a Youtube URL');
         }
 
         return $videoId;
@@ -502,7 +505,7 @@ class Youtube
     public function getChannelFromURL($youtube_url)
     {
         if (strpos($youtube_url, 'youtube.com') === false) {
-            throw new \Exception('The supplied URL does not look like a Youtube URL');
+            throw new \InvalidArgumentException('The supplied URL does not look like a Youtube URL');
         }
 
         $path = static::_parse_url_path($youtube_url);
@@ -515,7 +518,7 @@ class Youtube
             $username = $segments[count($segments) - 1];
             $channel = $this->getChannelByName($username);
         } else {
-            throw new \Exception('The supplied URL does not look like a Youtube Channel URL');
+            throw new \InvalidArgumentException('The supplied URL does not look like a Youtube Channel URL');
         }
 
         return $channel;
@@ -634,7 +637,7 @@ class Youtube
         curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, 1);
         $tuData = curl_exec($tuCurl);
         if (curl_errno($tuCurl)) {
-            throw new \Exception('Curl Error : ' . curl_error($tuCurl), curl_errno($tuCurl));
+            throw new \InvalidArgumentException('Curl Error : ' . curl_error($tuCurl), curl_errno($tuCurl));
         }
         return $tuData;
     }
