@@ -53,7 +53,7 @@ class Youtube
 
 
     /**
-     * @var array
+     * @var array urls to be used
      */
     public $APIs = array(
         'videos.list' => 'https://www.googleapis.com/youtube/v3/videos',
@@ -76,6 +76,7 @@ class Youtube
      * $youtube = new Youtube(array('key' => 'KEY HERE'))
      *
      * @param array $params
+     * @param string $sslPath
      * @throws \Exception
      */
     public function __construct($params = array(), $sslPath = null)
@@ -104,9 +105,10 @@ class Youtube
 
 
     /**
-     * Update the API key, useful if you want to switch
-     * multiple keys to avoid quota problem
-     * @param $apiKey
+     * Update the API key.
+     * Useful if you want to switch multiple keys to avoid quota problem.
+     * 
+     * @param string $apiKey
      */
     public function setApiKey($apiKey)
     {
@@ -114,10 +116,11 @@ class Youtube
     }
 
     /**
-     * Override the API urls, so you can set them from a config
+     * Override the API urls, so you can set them from a config.
+     * 
      * @param array $APIs
      */
-    public function setAPIs(array $APIs)
+    public function setAPIs($APIs)
     {
         $this->APIs = $APIs;
     }
@@ -129,11 +132,13 @@ class Youtube
     }
 
     /**
-     * @param $vId
+     * getting video details.
+     * 
+     * @param string $vId
      * @return \StdClass
      * @throws \Exception
      */
-    public function getVideoInfo($vId, $optionalParams = [])
+    public function getVideoInfo($vId, $optionalParams = array())
     {
         $API_URL = $this->getApi('videos.list');
         $params = array(
@@ -150,7 +155,9 @@ class Youtube
 
 
     /**
-     * @param $vIds
+     * Getting videos detail.
+     * 
+     * @param array|string $vIds
      * @return \StdClass
      * @throws \Exception
      */
@@ -169,10 +176,9 @@ class Youtube
 
 
     /**
-     * Simple search interface, this search all stuffs
-     * and order by relevance
+     * Simple search interface, this search all stuffs and order by relevance.
      *
-     * @param $q
+     * @param string $q
      * @param int $maxResults
      * @return array
      */
@@ -188,7 +194,7 @@ class Youtube
 
 
     /**
-     * Search only videos
+     * Search only videos.
      *
      * @param  string $q Query
      * @param  integer $maxResults number of results to return
@@ -212,7 +218,7 @@ class Youtube
 
 
     /**
-     * Search only videos in the channel
+     * Search only videos in the channel.
      *
      * @param  string $q
      * @param  string $channelId
@@ -236,7 +242,15 @@ class Youtube
         return $this->searchAdvanced($params);
     }
 
-
+    /**
+     * Search only livestreams videos in the channel.
+     *
+     * @param  string $q
+     * @param  string $channelId
+     * @param  integer $maxResults
+     * @param  string $order
+     * @return object
+     */
     public function searchChannelLiveStream($q, $channelId, $maxResults = 10, $order = null)
     {
         $params = array(
@@ -257,11 +271,10 @@ class Youtube
 
 
     /**
-     * Generic Search interface, use any parameters specified in
-     * the API reference
+     * Generic Search interface, use any parameters specified in the API reference.
      *
-     * @param $params
-     * @param $pageInfo
+     * @param array $params
+     * @param boolean $pageInfo
      * @return array
      * @throws \Exception
      */
@@ -286,11 +299,11 @@ class Youtube
 
 
     /**
-     * Generic Search Paginator, use any parameters specified in
-     * the API reference and pass through nextPageToken as $token if set.
+     * Generic Search Paginator.
+     * Use any parameters specified in the API reference and pass through nextPageToken as $token if set.
      *
-     * @param $params
-     * @param $token
+     * @param array $params
+     * @param string $token
      * @return array
      */
     public function paginateResults($params, $token = null)
@@ -303,11 +316,13 @@ class Youtube
 
 
     /**
-     * @param $username
+     * Getting channel infos by username.
+     * 
+     * @param string $username
      * @return \StdClass
      * @throws \Exception
      */
-    public function getChannelByName($username, $optionalParams = [])
+    public function getChannelByName($username, $optionalParams = array())
     {
         $API_URL = $this->getApi('channels.list');
         $params = array(
@@ -323,11 +338,14 @@ class Youtube
 
 
     /**
-     * @param $id
+     * Getting channel infos by channelId.
+     * 
+     * @param string $id
+     * @param array $optionalParams
      * @return \StdClass
      * @throws \Exception
      */
-    public function getChannelById($id, $optionalParams = [])
+    public function getChannelById($id, $optionalParams = array())
     {
         $API_URL = $this->getApi('channels.list');
         $params = array(
@@ -342,11 +360,14 @@ class Youtube
     }
 
     /**
+     * Getting channels infos by channelId.
+     * 
      * @param array $ids
+     * @param array $optionalParams
      * @return \StdClass
      * @throws \Exception
      */
-    public function getChannelsById($ids = array(), $optionalParams = [])
+    public function getChannelsById($ids = array(), $optionalParams = array())
     {
         $API_URL = $this->getApi('channels.list');
         $params = array(
@@ -361,12 +382,14 @@ class Youtube
     }
 
     /**
+     * Getting playlists for specified channelId.
+     * 
      * @param $channelId
      * @param array $optionalParams
      * @return array
      * @throws \Exception
      */
-    public function getPlaylistsByChannelId($channelId, $optionalParams = [])
+    public function getPlaylistsByChannelId($channelId, $optionalParams = array())
     {
         $API_URL = $this->getApi('playlists.list');
         $params = array(
@@ -382,15 +405,17 @@ class Youtube
 
 
     /**
-     * @param $id
+     * Getting playlists details for specified playlistId.
+     * 
+     * @param string $id
      * @return \StdClass
      * @throws \Exception
      */
-    public function getPlaylistById($id)
+    public function getPlaylistById($playlistId)
     {
         $API_URL = $this->getApi('playlists.list');
         $params = array(
-            'id' => $id,
+            'id' => $playlistId,
             'part' => 'id, snippet, status'
         );
         $apiData = $this->api_get($API_URL, $params);
@@ -399,7 +424,9 @@ class Youtube
 
 
     /**
-     * @param $playlistId
+     * Getting videos that are in specified playlists.
+     * 
+     * @param string $playlistId
      * @return array
      * @throws \Exception
      */
@@ -415,6 +442,9 @@ class Youtube
 
 
     /**
+     * Getting videos that are in specified playlists and pageInfo.
+     * PageInfo is required if you need to parse more than $maxresults into one playlist.
+     * 
      * @param $params
      * @param bool|false $pageInfo
      * @return array
@@ -441,11 +471,14 @@ class Youtube
 
 
     /**
-     * @param $channelId
+     * Getting activities on channel.
+     * 
+     * @param string $channelId
+     * @param array $optionalParams
      * @return array
      * @throws \Exception
      */
-    public function getActivitiesByChannelId($channelId, $optionalParams = [])
+    public function getActivitiesByChannelId($channelId, $optionalParams = array())
     {
         if (empty($channelId)) {
             throw new \InvalidArgumentException('ChannelId must be supplied');
@@ -467,7 +500,7 @@ class Youtube
      * Parse a youtube URL to get the youtube Vid.
      * Support both full URL (www.youtube.com) and short URL (youtu.be)
      *
-     * @param  string $youtube_url
+     * @param string $youtube_url
      * @throws \Exception
      * @return string Video Id
      */
@@ -530,7 +563,7 @@ class Youtube
      */
 
     /**
-     * @param $name
+     * @param string $name
      * @return mixed
      */
     public function getApi($name)
@@ -543,7 +576,7 @@ class Youtube
      * Decode the response from youtube, extract the single resource object.
      * (Don't use this to decode the response containing list of objects)
      *
-     * @param  string $apiData the api response from youtube
+     * @param string $apiData the api response from youtube
      * @throws \Exception
      * @return \StdClass  an Youtube resource object
      */
