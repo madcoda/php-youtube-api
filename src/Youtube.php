@@ -70,6 +70,11 @@ class Youtube
      */
     public $page_info = array();
 
+    /**
+     * @var YoutubeQuota
+     */
+    public $quotaObj;
+
 
     /**
      * Constructor
@@ -103,6 +108,13 @@ class Youtube
         }
     }
 
+    /**
+     * if quotaObj is set, we will be able to count quota used on each query
+     */
+    public function injectQuotaCalculator(YoutubeQuotas $quotaObj)
+    {
+        $this->quotaObj = $quotaObj;
+    }
 
     /**
      * Update the API key.
@@ -140,7 +152,7 @@ class Youtube
      */
     public function getVideoInfo($vId, $optionalParams = array())
     {
-        $API_URL = $this->getApi('videos.list');
+        $API_URL = $this->getApi($endPoint = 'videos.list');
         $params = array(
             'id' => $vId,
             'part' => 'id, snippet, contentDetails, player, statistics, status'
@@ -148,8 +160,10 @@ class Youtube
         if (count($optionalParams)) {
             $params = array_merge($params, $optionalParams);
         }
-
         $apiData = $this->api_get($API_URL, $params);
+            if (isset($this->quotaObj)) {
+                $this->quotaObj->addQuery($endPoint, $params['part']);
+            }
         return $this->decodeSingle($apiData);
     }
 
@@ -164,13 +178,16 @@ class Youtube
     public function getVideosInfo($vIds)
     {
         $ids = is_array($vIds) ? implode(',', $vIds) : $vIds;
-        $API_URL = $this->getApi('videos.list');
+        $API_URL = $this->getApi($endPoint = 'videos.list');
         $params = array(
             'id' => $ids,
             'part' => 'id, snippet, contentDetails, player, statistics, status'
         );
 
         $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         return $this->decodeList($apiData);
     }
 
@@ -280,13 +297,16 @@ class Youtube
      */
     public function searchAdvanced($params, $pageInfo = false)
     {
-        $API_URL = $this->getApi('search.list');
+        $API_URL = $this->getApi($endPoint = 'search.list');
 
         if (empty($params) || !isset($params['q'])) {
             throw new \InvalidArgumentException('at least the Search query must be supplied');
         }
 
         $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         if ($pageInfo) {
             return array(
                 'results' => $this->decodeList($apiData),
@@ -324,7 +344,7 @@ class Youtube
      */
     public function getChannelByName($username, $optionalParams = array())
     {
-        $API_URL = $this->getApi('channels.list');
+        $API_URL = $this->getApi($endPoint = 'channels.list');
         $params = array(
             'forUsername' => $username,
             'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
@@ -333,6 +353,9 @@ class Youtube
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         return $this->decodeSingle($apiData);
     }
 
@@ -347,7 +370,7 @@ class Youtube
      */
     public function getChannelById($id, $optionalParams = array())
     {
-        $API_URL = $this->getApi('channels.list');
+        $API_URL = $this->getApi($endPoint = 'channels.list');
         $params = array(
             'id' => $id,
             'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
@@ -356,6 +379,9 @@ class Youtube
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         return $this->decodeSingle($apiData);
     }
 
@@ -369,7 +395,7 @@ class Youtube
      */
     public function getChannelsById($ids = array(), $optionalParams = array())
     {
-        $API_URL = $this->getApi('channels.list');
+        $API_URL = $this->getApi($endPoint = 'channels.list');
         $params = array(
             'id' => implode(',', $ids),
             'part' => 'id,snippet,contentDetails,statistics,invideoPromotion'
@@ -378,6 +404,9 @@ class Youtube
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         return $this->decodeList($apiData);
     }
 
@@ -391,7 +420,7 @@ class Youtube
      */
     public function getPlaylistsByChannelId($channelId, $optionalParams = array())
     {
-        $API_URL = $this->getApi('playlists.list');
+        $API_URL = $this->getApi($endPoint = 'playlists.list');
         $params = array(
             'channelId' => $channelId,
             'part' => 'id, snippet, status'
@@ -400,6 +429,9 @@ class Youtube
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         return $this->decodeList($apiData);
     }
 
@@ -413,12 +445,15 @@ class Youtube
      */
     public function getPlaylistById($playlistId)
     {
-        $API_URL = $this->getApi('playlists.list');
+        $API_URL = $this->getApi($endPoint = 'playlists.list');
         $params = array(
             'id' => $playlistId,
             'part' => 'id, snippet, status'
         );
         $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         return $this->decodeSingle($apiData);
     }
 
@@ -452,13 +487,16 @@ class Youtube
      */
     public function getPlaylistItemsByPlaylistIdAdvanced($params, $pageInfo = false)
     {
-        $API_URL = $this->getApi('playlistItems.list');
+        $API_URL = $this->getApi($endPoint = 'playlistItems.list');
 
         if (empty($params) || !isset($params['playlistId'])) {
             throw new \InvalidArgumentException('at least the playlist id must be supplied');
         }
 
         $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         if ($pageInfo) {
             return array(
                 'results' => $this->decodeList($apiData),
@@ -483,7 +521,7 @@ class Youtube
         if (empty($channelId)) {
             throw new \InvalidArgumentException('ChannelId must be supplied');
         }
-        $API_URL = $this->getApi('activities');
+        $API_URL = $this->getApi($endPoint = 'activities');
         $params = array(
             'channelId' => $channelId,
             'part' => 'id, snippet, contentDetails'
@@ -492,6 +530,9 @@ class Youtube
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         return $this->decodeList($apiData);
     }
 
