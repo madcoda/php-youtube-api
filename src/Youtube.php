@@ -161,9 +161,9 @@ class Youtube
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
-            if (isset($this->quotaObj)) {
-                $this->quotaObj->addQuery($endPoint, $params['part']);
-            }
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
         return $this->decodeSingle($apiData);
     }
 
@@ -410,6 +410,36 @@ class Youtube
         return $this->decodeList($apiData);
     }
 
+    /** 
+     * Getting all playlists for one channed. 
+     * Some channels have more then 50 (maxResults allowed) palylists. Tis function allow us to send pageInfo
+     *
+     * @param array $params should contain channelId key param
+     * @param boolean $pageInfo
+     * @return array
+     * @throws \Exception
+     */
+    public function getPlaylistsByChannelIdAdvanced($params, $pageInfo = false)
+    {
+        if (empty($params) || !isset($params['channelId'])) {
+            throw new \InvalidArgumentException('ChannelId  must be supplied');
+        }
+
+        $API_URL = $this->getApi($endPoint = 'playlists.list');
+
+        $apiData = $this->api_get($API_URL, $params);
+        if (isset($this->quotaObj)) {
+            $this->quotaObj->addQuery($endPoint, $params['part']);
+        }
+        if ($pageInfo) {
+            return array(
+                'results' => $this->decodeList($apiData),
+                'info'    => $this->page_info
+            );
+        } else {
+            return $this->decodeList($apiData);
+        }
+    }
     /**
      * Getting playlists for specified channelId.
      * 

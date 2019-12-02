@@ -246,6 +246,37 @@ class YoutubeTest extends TestCase
         $this->assertObjectHasAttribute('statistics', $response[0]);
     }
 
+    public function testGetPlaylistsByChannelIdAdvanced()
+    {
+        $playlistParams = [
+            'channelId' => $GOOGLE_CHANNELID = 'UCK8sQmJBp8GCxrOtXWBpyEA',
+            'maxResults' => 15,
+            'part' => 'id,contentDetails,localizations,player,snippet,status',
+        ];
+
+        $response = $this->youtube->getPlaylistsByChannelIdAdvanced($playlistParams, true);
+        $this->assertGreaterThan(10, $response['results']);
+        $this->assertEquals('youtube#playlist', $response["results"][0]->kind);
+        $this->assertEquals('Google', $response["results"][0]->snippet->channelTitle);
+        $this->assertObjectHasAttribute('snippet', $response["results"][0]);
+        $this->assertObjectHasAttribute('contentDetails', $response["results"][0]);
+
+        $this->assertEqualsCanonicalizing(['results', 'info'], array_keys($response));
+        $this->assertContains(
+            'PL590L5WQmH8e3dS9CtvRofb0nfdGb-Of9',
+            array_map(function ($playlist) {
+                return $playlist->id;
+            }, $response['results'])
+        );
+        $this->assertNotNull($response["info"]["nextPageToken"]);
+
+        // running another test with pageToken (next page token)
+        $playlistParams["pageToken"] = $response["info"]["nextPageToken"];
+        $response = $this->youtube->getPlaylistsByChannelIdAdvanced($playlistParams, true);
+        $this->assertEqualsCanonicalizing(['results', 'info'], array_keys($response));
+        $this->assertGreaterThan(10, $response['results']);
+    }
+
 
     public function testGetPlaylistsByChannelId()
     {
