@@ -5,6 +5,8 @@
 .LSOverride
 Icon
 
+# PhpUnit cache
+.phpunit.result.cache
 
 # Thumbnails
 ._*

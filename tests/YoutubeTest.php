@@ -4,6 +4,8 @@ namespace Madcoda\Youtube\Tests;
 
 use Madcoda\Youtube\Youtube;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class YoutubeTest
  *
@@ -11,7 +13,7 @@ use Madcoda\Youtube\Youtube;
  * @package  Youtube
  * @author   Jason Leung <jason@madcoda.com>
  */
-class YoutubeTest extends \PHPUnit_Framework_TestCase
+class YoutubeTest extends TestCase
 {
     /**
      * @var Youtube
@@ -20,7 +22,7 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
     protected $youtube;
     protected $optionParams;
 
-    public function setUp()
+    public function setUp(): void
     {
         // !!!!! DO NOT USE THIS API KEY FOR PRODUCTION USE !!!!! */
         $TEST_API_KEY = 'AIzaSyDlNBnbhP7G9z_8qunELCJ8012PP3t_c1o';
@@ -30,11 +32,11 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
             'referer' => 'fake-refer',
             'apis' => array(
                 'videos.list' => 'https://www.googleapis.com/youtube/v3/videos',
-                'search.list'=> 'https://www.googleapis.com/youtube/v3/search',
-                'channels.list'=> 'https://www.googleapis.com/youtube/v3/channels',
-                'playlists.list'=> 'https://www.googleapis.com/youtube/v3/playlists',
-                'playlistItems.list'=> 'https://www.googleapis.com/youtube/v3/playlistItems',
-                'activities'=> 'https://www.googleapis.com/youtube/v3/activities',
+                'search.list' => 'https://www.googleapis.com/youtube/v3/search',
+                'channels.list' => 'https://www.googleapis.com/youtube/v3/channels',
+                'playlists.list' => 'https://www.googleapis.com/youtube/v3/playlists',
+                'playlistItems.list' => 'https://www.googleapis.com/youtube/v3/playlistItems',
+                'activities' => 'https://www.googleapis.com/youtube/v3/activities',
             )
         );
         $this->youtube = new Youtube($params);
@@ -43,7 +45,7 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->youtube = null;
         $this->optionParams = null;
@@ -57,31 +59,41 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testConstructorFail()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $this->youtube = new Youtube(array());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testConstructorFail2()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $this->youtube = new Youtube('FAKE API KEY');
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage    Error 400 Bad Request : keyInvalid
-     */
     public function testInvalidApiKey()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Error 400 Bad Request : keyInvalid');
         $this->youtube = new Youtube(array('key' => 'nonsense'));
         $vID = 'rie-hPVJ7Sw';
         $this->youtube->getVideoInfo($vID);
+    }
+
+    public function testGetVideoInfoWithParams()
+    {
+        $vID = 'rie-hPVJ7Sw';
+        $response = $this->youtube->getVideoInfo($vID, ['part' => 'id, snippet, status']);
+
+        $this->assertEquals($vID, $response->id);
+        $this->assertNotNull('response');
+        $this->assertEquals('youtube#video', $response->kind);
+        //add all these assertions here in case the api is changed,
+        //we can detect it instantly
+        $this->assertObjectHasAttribute('status', $response);
+        $this->assertObjectHasAttribute('snippet', $response);
+        $this->assertObjectNotHasAttribute('contentDetails', $response);
+        $this->assertObjectNotHasAttribute('statistics', $response);
     }
 
     public function testGetVideoInfo()
@@ -104,8 +116,8 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
     {
         $vID = array('rie-hPVJ7Sw', 'lRRk97FYLJM');
         $response = $this->youtube->getVideosInfo($vID);
-        $this->assertInternalType('array', $response);
-        
+        $this->assertIsArray($response);
+
         foreach ($response as $value) {
             $this->assertContains($value->id, $vID);
             $this->assertEquals('youtube#video', $value->kind);
@@ -170,12 +182,9 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('youtube#searchListResponse', $response['info']['kind']);
     }
 
-    /**
-     *
-     * @expectedException \InvalidArgumentException
-     */
     public function testSearchAdvancedWithException()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $limit = rand(3, 10);
         $params = array();
         $response = $this->youtube->searchAdvanced($params, true);
@@ -237,6 +246,37 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('statistics', $response[0]);
     }
 
+    public function testGetPlaylistsByChannelIdAdvanced()
+    {
+        $playlistParams = [
+            'channelId' => $GOOGLE_CHANNELID = 'UCK8sQmJBp8GCxrOtXWBpyEA',
+            'maxResults' => 15,
+            'part' => 'id,contentDetails,localizations,player,snippet,status',
+        ];
+
+        $response = $this->youtube->getPlaylistsByChannelIdAdvanced($playlistParams, true);
+        $this->assertGreaterThan(10, $response['results']);
+        $this->assertEquals('youtube#playlist', $response["results"][0]->kind);
+        $this->assertEquals('Google', $response["results"][0]->snippet->channelTitle);
+        $this->assertObjectHasAttribute('snippet', $response["results"][0]);
+        $this->assertObjectHasAttribute('contentDetails', $response["results"][0]);
+
+        $this->assertEqualsCanonicalizing(['results', 'info'], array_keys($response));
+        $this->assertContains(
+            'PL590L5WQmH8e3dS9CtvRofb0nfdGb-Of9',
+            array_map(function ($playlist) {
+                return $playlist->id;
+            }, $response['results'])
+        );
+        $this->assertNotNull($response["info"]["nextPageToken"]);
+
+        // running another test with pageToken (next page token)
+        $playlistParams["pageToken"] = $response["info"]["nextPageToken"];
+        $response = $this->youtube->getPlaylistsByChannelIdAdvanced($playlistParams, true);
+        $this->assertEqualsCanonicalizing(['results', 'info'], array_keys($response));
+        $this->assertGreaterThan(10, $response['results']);
+    }
+
 
     public function testGetPlaylistsByChannelId()
     {
@@ -280,12 +320,9 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('youtube#playlistItemListResponse', $response['info']['kind']);
     }
 
-     /**
-     *
-     * @expectedException \InvalidArgumentException
-     */
     public function testGetPlaylistItemsByPlaylistIdAdvancedWithException()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $response = $this->youtube->getPlaylistItemsByPlaylistIdAdvanced(null, true);
     }
 
@@ -310,18 +347,16 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
     /**
      *
      * @dataProvider MalFormURLProvider
-     * @expectedException \Exception
      */
     public function testParseVIdFromURLException($url)
     {
+        $this->expectException(\InvalidArgumentException::class);
         $vId = $this->youtube->parseVIdFromURL($url);
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testParseVIdException()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $vId = $this->youtube->parseVIdFromURL('http://www.facebook.com');
     }
 
@@ -334,11 +369,9 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Google', $response[0]->snippet->channelTitle);
     }
 
-    /**
-     * @expectedException  \InvalidArgumentException
-     */
     public function testGetActivitiesByChannelIdException()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $channelId = '';
         $response = $this->youtube->getActivitiesByChannelId($channelId);
     }
@@ -359,27 +392,22 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('PHPoC', $channel->snippet->title);
     }
 
-    /**
-     * @expectedException  \Exception
-     */
     public function testGetChannelFromURLWithNoYoutubeUrlException()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $channel = $this->youtube->getChannelFromURL('https://google.com');
     }
 
-    /**
-     * @expectedException  \Exception
-     */
     public function testGetChannelFromURLWithInvalidYoutubeUrlException()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $channel = $this->youtube->getChannelFromURL('https://www.youtube.com/invalid/UCyNF0DijeiZ8jhc_xlVa4Vg');
     }
 
-    /**
-     * @expectedException  \Exception
-     */
+
     public function testDecodeListWithException()
     {
+        $this->expectException(\Exception::class);
         $GOOGLE_ZEITGEIST_PLAYLIST = 'PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs';
         $params = array(
             'playlistId' => $GOOGLE_ZEITGEIST_PLAYLIST
@@ -402,11 +430,9 @@ class YoutubeTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($response);
     }
 
-    /**
-     * @expectedException  \Exception
-     */
     public function testApi_getWithException()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $limit = rand(3, 10);
         $params = array(
             'q' => 'Android',
