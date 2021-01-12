@@ -6,6 +6,11 @@
     colors="true"
     bootstrap="vendor/autoload.php"
     >
+    <php>
+        <ini name="error_reporting" value="-1" />
+        <ini name="xdebug.mode" value="coverage" />
+        <env name="XDEBUG_MODE" value="coverage" />
+    </php>
     <testsuites>
         <testsuite name="PHP-Youtube-API Test Suite">
             <directory>tests</directory>
