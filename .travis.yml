@@ -16,7 +16,7 @@ matrix:
     - php: nightly
 
 before_script:
-  - composer install -v --no-interaction --prefer-source
+  - composer update -v --no-interaction --prefer-source
 
 script:
   - vendor/bin/phpunit --coverage-clover=coverage.xml
