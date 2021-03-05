@@ -376,6 +376,24 @@ class Youtube
         $apiData = $this->api_get($API_URL, $params);
         return $this->decodeList($apiData);
     }
+    
+     /**
+     * @param $url
+     * @return String
+     * @throws \Exception
+     */
+    public function parseChannelIdFromUrl($url) {
+
+        $url = parse_url($url);
+        $id = end(explode('/', $url['path']));
+
+        if (empty($id)) {
+            throw new \InvalidArgumentException('channel url is not correct.');
+        }
+
+        return $id;
+    }
+
 
 
     /**
