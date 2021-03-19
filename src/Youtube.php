@@ -554,6 +554,9 @@ class Youtube
             }
             throw new \Exception($msg, $resObj->error->code);
         } else {
+            if(!property_exists($resObj, 'items')){
+                return false;
+            }
             $itemsArray = $resObj->items;
             if (!is_array($itemsArray) || count($itemsArray) == 0) {
                 return false;
