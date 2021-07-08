@@ -37,7 +37,7 @@ For the functions implemented in this library, please visit [API Reference](http
 ### Example usage with pure PHP (with composer)
 ```php
 require 'vendor/autoload.php';
-$youtube = new Madcoda\Youtube\Youtube(array('key' => '* Your API key here *'));
+$youtube = new Madcoda\Youtube(array('key' => '* Your API key here *'));
 $video = $youtube->getVideoInfo('rie-hPVJ7Sw');
 ```
 
