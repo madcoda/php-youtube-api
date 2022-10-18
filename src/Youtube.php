@@ -476,8 +476,12 @@ class Youtube
                 $path = static::_parse_url_path($youtube_url);
                 $videoId = substr($path, 7);
             }
+            if (strpos($youtube_url, 'shorts')) {
+                $path = static::_parse_url_path($youtube_url);
+                $videoId = substr($path, 8);
+            }
             if ($params = static::_parse_url_query($youtube_url)) {
-                $videoId = isset($params['v']) ? $params['v'] : null;
+                $videoId = isset($params['v']) ? $params['v'] : $videoId;
             }
         } elseif (strpos($youtube_url, 'youtu.be')) {
             $path = static::_parse_url_path($youtube_url);
