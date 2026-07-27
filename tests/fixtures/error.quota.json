@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": 403,
+    "message": "The request cannot be completed because you have exceeded your quota.",
+    "errors": [
+      {
+        "domain": "youtube.quota",
+        "reason": "quotaExceeded",
+        "message": "The request cannot be completed because you have exceeded your quota."
+      }
+    ]
+  }
+}

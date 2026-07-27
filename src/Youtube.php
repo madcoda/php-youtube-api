@@ -3,6 +3,8 @@
 namespace Madcoda\Youtube;
 
 use Madcoda\Youtube\Constants;
+use Madcoda\Youtube\Http\CurlHttpClient;
+use Madcoda\Youtube\Http\HttpClientInterface;
 
 /**
  * Youtube Data API (mainly apis for retrieving data)
@@ -10,7 +12,6 @@ use Madcoda\Youtube\Constants;
  */
 class Youtube
 {
-
     /*
      * some constants for convenience
      */
@@ -50,6 +51,14 @@ class Youtube
      * @var string
      */
     protected $sslPath = null;
+
+
+    /**
+     * Transport used for every request. Created on first use if not injected.
+     *
+     * @var \Madcoda\Youtube\Http\HttpClientInterface
+     */
+    protected $httpClient = null;
 
 
     /**
@@ -98,6 +107,11 @@ class Youtube
         }
 
         if ($sslPath !== null) {
+            if (!file_exists($sslPath)) {
+                throw new \InvalidArgumentException(
+                    'The supplied SSL certificate path does not exist: ' . $sslPath
+                );
+            }
             $this->sslPath = $sslPath;
         }
     }
@@ -126,11 +140,43 @@ class Youtube
     public function setReferer($referer)
     {
         $this->referer = $referer;
+
+        // Keep an already-created default transport in step with the change.
+        if ($this->httpClient instanceof CurlHttpClient) {
+            $this->httpClient->setReferer($referer);
+        }
+    }
+
+    /**
+     * Supply the transport used for every request.
+     *
+     * Injecting a client lets the library be driven without a network
+     * connection, which is how the offline test suite runs.
+     *
+     * @param HttpClientInterface $httpClient
+     */
+    public function setHttpClient(HttpClientInterface $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
+
+    /**
+     * The transport in use, creating the ext-curl default on first call.
+     *
+     * @return HttpClientInterface
+     */
+    public function getHttpClient()
+    {
+        if ($this->httpClient === null) {
+            $this->httpClient = new CurlHttpClient($this->referer, $this->sslPath);
+        }
+
+        return $this->httpClient;
     }
 
     /**
      * @param $vId
-     * @return \StdClass
+     * @return \StdClass|false the video resource, or false if not found
      * @throws \Exception
      */
     public function getVideoInfo($vId)
@@ -148,7 +194,7 @@ class Youtube
 
     /**
      * @param $vIds
-     * @return \StdClass
+     * @return array|false     list of video resources, or false if none
      * @throws \Exception
      */
     public function getVideosInfo($vIds)
@@ -171,7 +217,7 @@ class Youtube
      *
      * @param $q
      * @param int $maxResults
-     * @return array
+     * @return array|false
      */
     public function search($q, $maxResults = 10)
     {
@@ -190,7 +236,7 @@ class Youtube
      * @param  string $q Query
      * @param  integer $maxResults number of results to return
      * @param  string $order Order by
-     * @return \StdClass  API results
+     * @return array|false     API results, or false if none
      */
     public function searchVideos($q, $maxResults = 10, $order = null)
     {
@@ -215,7 +261,7 @@ class Youtube
      * @param  string $channelId
      * @param  integer $maxResults
      * @param  string $order
-     * @return object
+     * @return array|false
      */
     public function searchChannelVideos($q, $channelId, $maxResults = 10, $order = null)
     {
@@ -259,7 +305,7 @@ class Youtube
      *
      * @param $params
      * @param $pageInfo
-     * @return array
+     * @return array|false     items, or array{results: array|false, info: array} when $pageInfo
      * @throws \Exception
      */
     public function searchAdvanced($params, $pageInfo = false)
@@ -288,7 +334,7 @@ class Youtube
      *
      * @param $params
      * @param $token
-     * @return array
+     * @return array           array{results: array|false, info: array}
      */
     public function paginateResults($params, $token = null)
     {
@@ -301,7 +347,7 @@ class Youtube
 
     /**
      * @param $username
-     * @return \StdClass
+     * @return \StdClass|false the channel resource, or false if not found
      * @throws \Exception
      */
     public function getChannelByName($username, $optionalParams = false)
@@ -311,7 +357,7 @@ class Youtube
             'forUsername' => $username,
             'part' => 'id,snippet,contentDetails,statistics'
         );
-        if ($optionalParams) {
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -321,7 +367,7 @@ class Youtube
 
     /**
      * @param $id
-     * @return \StdClass
+     * @return \StdClass|false the channel resource, or false if not found
      * @throws \Exception
      */
     public function getChannelById($id, $optionalParams = false)
@@ -331,7 +377,7 @@ class Youtube
             'id' => $id,
             'part' => 'id,snippet,contentDetails,statistics'
         );
-        if ($optionalParams) {
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -340,7 +386,7 @@ class Youtube
 
     /**
      * @param array $ids
-     * @return \StdClass
+     * @return array|false     list of channel resources, or false if none
      * @throws \Exception
      */
     public function getChannelsById($ids = array(), $optionalParams = false)
@@ -350,7 +396,7 @@ class Youtube
             'id' => implode(',', $ids),
             'part' => 'id,snippet,contentDetails,statistics'
         );
-        if($optionalParams){
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -360,7 +406,7 @@ class Youtube
     /**
      * @param $channelId
      * @param array $optionalParams
-     * @return array
+     * @return array|false
      * @throws \Exception
      */
     public function getPlaylistsByChannelId($channelId, $optionalParams = array())
@@ -370,7 +416,7 @@ class Youtube
             'channelId' => $channelId,
             'part' => 'id, snippet, status'
         );
-        if ($optionalParams) {
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -380,7 +426,7 @@ class Youtube
 
     /**
      * @param $id
-     * @return \StdClass
+     * @return \StdClass|false the playlist resource, or false if not found
      * @throws \Exception
      */
     public function getPlaylistById($id)
@@ -397,7 +443,7 @@ class Youtube
 
     /**
      * @param $playlistId
-     * @return array
+     * @return array|false
      * @throws \Exception
      */
     public function getPlaylistItemsByPlaylistId($playlistId, $maxResults = 50)
@@ -414,7 +460,7 @@ class Youtube
     /**
      * @param $params
      * @param bool|false $pageInfo
-     * @return array
+     * @return array|false     items, or array{results: array|false, info: array} when $pageInfo
      * @throws \Exception
      */
     public function getPlaylistItemsByPlaylistIdAdvanced($params, $pageInfo = false)
@@ -439,7 +485,7 @@ class Youtube
 
     /**
      * @param $channelId
-     * @return array
+     * @return array|false
      * @throws \Exception
      */
     public function getActivitiesByChannelId($channelId, $optionalParams = false)
@@ -452,7 +498,7 @@ class Youtube
             'channelId' => $channelId,
             'part' => 'id, snippet, contentDetails'
         );
-        if ($optionalParams) {
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -471,16 +517,28 @@ class Youtube
     public static function parseVIdFromURL($youtube_url)
     {
         $videoId = null;
-        if (strpos($youtube_url, 'youtube.com')) {
-            if (strpos($youtube_url, 'embed')) {
-                $path = static::_parse_url_path($youtube_url);
+        // parse_url() only recognises a host when a scheme is present; without
+        // one the whole string is treated as the path, so the fixed substr()
+        // offsets below would slice the host instead of the id. Normalise first
+        // so "youtu.be/xxxx" behaves like "https://youtu.be/xxxx".
+        $url = $youtube_url;
+        if (strpos($url, '//') === false) {
+            $url = 'https://' . ltrim($url, '/');
+        }
+
+        // strpos() returns 0 when the URL *starts* with the needle, which is
+        // falsy. Comparing against false is required, otherwise scheme-less
+        // URLs such as "youtube.com/watch?v=..." are rejected as invalid.
+        if (strpos($url, 'youtube.com') !== false) {
+            if (strpos($url, 'embed') !== false) {
+                $path = static::_parse_url_path($url);
                 $videoId = substr($path, 7);
             }
-            if ($params = static::_parse_url_query($youtube_url)) {
+            if ($params = static::_parse_url_query($url)) {
                 $videoId = isset($params['v']) ? $params['v'] : null;
             }
-        } elseif (strpos($youtube_url, 'youtu.be')) {
-            $path = static::_parse_url_path($youtube_url);
+        } elseif (strpos($url, 'youtu.be') !== false) {
+            $path = static::_parse_url_path($url);
             $videoId = substr($path, 1);
         }
 
@@ -497,7 +555,7 @@ class Youtube
      *
      * @param  string $youtube_url
      * @throws \Exception
-     * @return object Channel object
+     * @return \StdClass|false Channel object, or false if not found
      */
     public function getChannelFromURL($youtube_url)
     {
@@ -542,7 +600,7 @@ class Youtube
      *
      * @param  string $apiData the api response from youtube
      * @throws \Exception
-     * @return \StdClass  an Youtube resource object
+     * @return \StdClass|false a Youtube resource object, or false if absent
      */
     public function decodeSingle(&$apiData)
     {
@@ -554,7 +612,10 @@ class Youtube
             }
             throw new \Exception($msg, $resObj->error->code);
         } else {
-            if(!property_exists($resObj, 'items')){
+            // A non-JSON body (an HTML error page, an empty response, a truncated
+            // read) decodes to null. Passing that to property_exists() is a fatal
+            // TypeError on PHP 8, where PHP 7 only raised a warning and carried on.
+            if (!is_object($resObj) || !property_exists($resObj, 'items')) {
                 return false;
             }
             $itemsArray = $resObj->items;
@@ -572,7 +633,7 @@ class Youtube
      *
      * @param  string $apiData response string from youtube
      * @throws \Exception
-     * @return array Array of StdClass objects
+     * @return array|false      Array of StdClass objects, or false if empty
      */
     public function decodeList(&$apiData)
     {
@@ -584,11 +645,13 @@ class Youtube
             }
             throw new \Exception($msg, $resObj->error->code);
         } else {
+            // Reset page_info on every call so a failed decode cannot leave the
+            // caller reading stale pagination data from an earlier request.
             $this->page_info = array(
-                'resultsPerPage' => $resObj->pageInfo->resultsPerPage,
+                'resultsPerPage' => isset($resObj->pageInfo->resultsPerPage) ? $resObj->pageInfo->resultsPerPage : null,
                 'totalResults'   => isset($resObj->pageInfo->totalResults) ? $resObj->pageInfo->totalResults : null,
-                'kind'           => $resObj->kind,
-                'etag'           => $resObj->etag,
+                'kind'           => isset($resObj->kind) ? $resObj->kind : null,
+                'etag'           => isset($resObj->etag) ? $resObj->etag : null,
                 'prevPageToken'     => null,
                 'nextPageToken'     => null
             );
@@ -599,6 +662,9 @@ class Youtube
                 $this->page_info['nextPageToken'] = $resObj->nextPageToken;
             }
 
+            if (!is_object($resObj) || !isset($resObj->items)) {
+                return false;
+            }
             $itemsArray = $resObj->items;
             if (!is_array($itemsArray) || count($itemsArray) == 0) {
                 return false;
@@ -622,24 +688,7 @@ class Youtube
         //set the youtube key
         $params['key'] = $this->youtube_key;
 
-        //boilerplates for CURL
-        $tuCurl = curl_init();
-        if ($this->sslPath !== null) {
-            curl_setopt($tuCurl, CURLOPT_SSL_VERIFYPEER, true);
-            curl_setopt($tuCurl, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($tuCurl, CURLOPT_CAINFO, __DIR__ . '/cert/cacert.pem');
-            curl_setopt($tuCurl, CURLOPT_CAPATH, __DIR__ . '/cert/cacert.pem');
-        }
-        curl_setopt($tuCurl, CURLOPT_URL, $url . (strpos($url, '?') === false ? '?' : '') . http_build_query($params));
-        if ($this->referer !== null) {
-            curl_setopt($tuCurl, CURLOPT_REFERER, $this->referer);
-        }
-        curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, 1);
-        $tuData = curl_exec($tuCurl);
-        if (curl_errno($tuCurl)) {
-            throw new \Exception('Curl Error : ' . curl_error($tuCurl), curl_errno($tuCurl));
-        }
-        return $tuData;
+        return $this->getHttpClient()->get($url, $params);
     }
 
 
@@ -651,7 +700,11 @@ class Youtube
      */
     public static function _parse_url_path($url)
     {
-        return parse_url($url, PHP_URL_PATH);
+        $path = parse_url($url, PHP_URL_PATH);
+
+        // parse_url() returns null for a URL with no path at all. Returning a
+        // string keeps substr() off the PHP 8.1+ "null to non-nullable" path.
+        return $path === null || $path === false ? '' : $path;
     }
 
 
@@ -666,6 +719,13 @@ class Youtube
         $queryString = parse_url($url, PHP_URL_QUERY);
 
         $params = array();
+
+        // parse_url() returns null when the URL carries no query string, and
+        // passing null to parse_str() is deprecated on PHP 8.1+. This fires for
+        // every URL without a query, including all /embed/ URLs.
+        if ($queryString === null || $queryString === false) {
+            $queryString = '';
+        }
 
         parse_str($queryString, $params);
 

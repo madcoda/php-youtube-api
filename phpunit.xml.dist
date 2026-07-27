@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Deliberately minimal so that one config validates across every PHPUnit
+    version this library supports (6.5 on PHP 7.0 through 11.5 on PHP 8.5).
+
+    Code coverage is configured on the command line rather than here, because
+    the coverage element was renamed twice over that range: filter/whitelist
+    in PHPUnit 6 to 8, coverage/include in 9, and source/include in 10+.
+    CI collects coverage on a single modern PHP by passing the coverage-clover
+    and coverage-filter options to phpunit.
+
+    The live tests are excluded by default; they need YOUTUBE_API_KEY and
+    consume API quota. Run them by passing the "group live" option to phpunit.
+-->
 <phpunit
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
     backupGlobals="false"
     colors="true"
     bootstrap="vendor/autoload.php"
     >
     <php>
         <ini name="error_reporting" value="-1" />
-        <ini name="xdebug.mode" value="coverage" />
-        <env name="XDEBUG_MODE" value="coverage" />
     </php>
+
     <testsuites>
-        <testsuite name="PHP-Youtube-API Test Suite">
-            <directory>tests</directory>
+        <testsuite name="unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/Integration</directory>
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist>
-            <directory>src</directory>
-        </whitelist>
-    </filter>
+    <groups>
+        <exclude>
+            <group>live</group>
+        </exclude>
+    </groups>
 </phpunit>

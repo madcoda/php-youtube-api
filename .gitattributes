@@ -1,0 +1,19 @@
+# Keep development-only files out of the distributed package. Consumers running
+# `composer install --prefer-dist` get src/ and the metadata, nothing else.
+/.editorconfig      export-ignore
+/.gitattributes     export-ignore
+/.github/           export-ignore
+/.gitignore         export-ignore
+/.php-cs-fixer.dist.php export-ignore
+/CONTRIBUTING.md    export-ignore
+/phpstan.neon.dist  export-ignore
+/phpunit.xml.dist   export-ignore
+/tests/             export-ignore
+
+# Normalise line endings.
+*.php   text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf
+*.yml   text eol=lf
+*.neon  text eol=lf
+*.pem   text eol=lf

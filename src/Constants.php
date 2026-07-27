@@ -7,7 +7,6 @@ namespace Madcoda\Youtube;
  */
 class Constants
 {
-
     //order in search api
     const ORDER_DATE = 'date';
     const ORDER_RATING = 'rating';

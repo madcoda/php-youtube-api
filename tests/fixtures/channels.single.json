@@ -1,0 +1,56 @@
+{
+    "kind": "youtube#channelListResponse",
+    "etag": "uiBgxtuoO1USHfk429mxlacVVY8",
+    "pageInfo": {
+        "totalResults": 1,
+        "resultsPerPage": 5
+    },
+    "items": [
+        {
+            "kind": "youtube#channel",
+            "etag": "hA5XbS__ONsMJZpQG08Mfj5qVAY",
+            "id": "UCBR8-60-B28hp2BmDPdntcQ",
+            "snippet": {
+                "title": "YouTube",
+                "description": "YouTube's official YouTube channel",
+                "customUrl": "@youtube",
+                "publishedAt": "1970-01-01T00:00:00Z",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://yt3.ggpht.com/3s6evpqAiDU9tQR4sC2siJippbH2RWVPnwHgyl4V0th2iuQz0VDQZbUhQBGmsxLYo-mjG6TqZQ=s88-c-k-c0x00ffffff-no-rj",
+                        "width": 88,
+                        "height": 88
+                    },
+                    "medium": {
+                        "url": "https://yt3.ggpht.com/3s6evpqAiDU9tQR4sC2siJippbH2RWVPnwHgyl4V0th2iuQz0VDQZbUhQBGmsxLYo-mjG6TqZQ=s240-c-k-c0x00ffffff-no-rj",
+                        "width": 240,
+                        "height": 240
+                    },
+                    "high": {
+                        "url": "https://yt3.ggpht.com/3s6evpqAiDU9tQR4sC2siJippbH2RWVPnwHgyl4V0th2iuQz0VDQZbUhQBGmsxLYo-mjG6TqZQ=s800-c-k-c0x00ffffff-no-rj",
+                        "width": 800,
+                        "height": 800
+                    }
+                },
+                "defaultLanguage": "en",
+                "localized": {
+                    "title": "YouTube",
+                    "description": "YouTube's official YouTube channel"
+                },
+                "country": "US"
+            },
+            "contentDetails": {
+                "relatedPlaylists": {
+                    "likes": "",
+                    "uploads": "UUBR8-60-B28hp2BmDPdntcQ"
+                }
+            },
+            "statistics": {
+                "viewCount": "1172807953",
+                "subscriberCount": "45900000",
+                "hiddenSubscriberCount": false,
+                "videoCount": "1520"
+            }
+        }
+    ]
+}

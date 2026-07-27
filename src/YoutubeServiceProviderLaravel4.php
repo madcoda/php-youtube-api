@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Madcoda\Youtube;
 
@@ -6,9 +6,15 @@ use Config;
 use Madcoda\Youtube\Youtube;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * @deprecated Laravel 4 reached end of life in 2015. This provider relies on
+ *             package() and bindShared(), both removed in Laravel 5, so it
+ *             cannot work on any supported framework version. It is kept only
+ *             so existing installs do not fatal on a missing class, and will be
+ *             removed in 2.0. Use YoutubeServiceProviderLaravel5 instead.
+ */
 class YoutubeServiceProviderLaravel4 extends ServiceProvider
 {
-
     /**
      * Indicates if loading of the provider is deferred.
      *

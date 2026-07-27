@@ -1,5 +1,4 @@
-### /Users/jason/.gitignore-boilerplates/Global/OSX.gitignore
-
+# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -16,3 +15,32 @@ Icon
 # Composer
 vendor
 local
+
+# A library must not commit its lock file, so that consumers resolve
+# dependencies against their own PHP version.
+composer.lock
+
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache/
+coverage.xml
+coverage/
+
+# PHP-CS-Fixer / PHPStan
+.php-cs-fixer.cache
+.phpstan.cache/
+
+# Local secrets. The live test suite reads YOUTUBE_API_KEY from the
+# environment; keep the file that supplies it out of the repository.
+.envrc
+.envrc.local
+.env
+.env.local
+
+# Editor swap and backup files. These matter here beyond the usual tidiness:
+# a swap file for .envrc holds the buffer contents, so an unignored .envrc.swp
+# can commit the very secret .envrc was ignored to protect.
+*.swp
+*.swo
+*~
+.*.sw[a-p]

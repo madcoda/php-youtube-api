@@ -1,0 +1,100 @@
+{
+    "kind": "youtube#channelListResponse",
+    "etag": "VMERF_IW-Xe7Q6bW-rlCaCceXqk",
+    "pageInfo": {
+        "totalResults": 2,
+        "resultsPerPage": 5
+    },
+    "items": [
+        {
+            "kind": "youtube#channel",
+            "etag": "hA5XbS__ONsMJZpQG08Mfj5qVAY",
+            "id": "UCBR8-60-B28hp2BmDPdntcQ",
+            "snippet": {
+                "title": "YouTube",
+                "description": "YouTube's official YouTube channel",
+                "customUrl": "@youtube",
+                "publishedAt": "1970-01-01T00:00:00Z",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://yt3.ggpht.com/3s6evpqAiDU9tQR4sC2siJippbH2RWVPnwHgyl4V0th2iuQz0VDQZbUhQBGmsxLYo-mjG6TqZQ=s88-c-k-c0x00ffffff-no-rj",
+                        "width": 88,
+                        "height": 88
+                    },
+                    "medium": {
+                        "url": "https://yt3.ggpht.com/3s6evpqAiDU9tQR4sC2siJippbH2RWVPnwHgyl4V0th2iuQz0VDQZbUhQBGmsxLYo-mjG6TqZQ=s240-c-k-c0x00ffffff-no-rj",
+                        "width": 240,
+                        "height": 240
+                    },
+                    "high": {
+                        "url": "https://yt3.ggpht.com/3s6evpqAiDU9tQR4sC2siJippbH2RWVPnwHgyl4V0th2iuQz0VDQZbUhQBGmsxLYo-mjG6TqZQ=s800-c-k-c0x00ffffff-no-rj",
+                        "width": 800,
+                        "height": 800
+                    }
+                },
+                "defaultLanguage": "en",
+                "localized": {
+                    "title": "YouTube",
+                    "description": "YouTube's official YouTube channel"
+                },
+                "country": "US"
+            },
+            "contentDetails": {
+                "relatedPlaylists": {
+                    "likes": "",
+                    "uploads": "UUBR8-60-B28hp2BmDPdntcQ"
+                }
+            },
+            "statistics": {
+                "viewCount": "1172807953",
+                "subscriberCount": "45900000",
+                "hiddenSubscriberCount": false,
+                "videoCount": "1520"
+            }
+        },
+        {
+            "kind": "youtube#channel",
+            "etag": "qYxVtKt6XT6mELAFnjoWgpex1kg",
+            "id": "UCLA_DiR1FfKNvjuUpBHmylQ",
+            "snippet": {
+                "title": "NASA",
+                "description": "NASA's mission is to pioneer the future in space exploration, scientific discovery, and aeronautics research.\r\n\r\nTo do that, we have worked around the world—and off it—for more than 60 years, searching for answers to fundamental questions about our place in the universe. We're exploring space and discovering Earth. Join us on this exciting and important journey.\n",
+                "customUrl": "@nasa",
+                "publishedAt": "2008-06-03T18:44:30Z",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://yt3.ggpht.com/eIf5fNPcIcj9ig-wZBeq4stFy1lgjWTW1nLT5dYlFkHZprZ03QBiMcbpwNMB6XSBjrSFGtAGQg=s88-c-k-c0x00ffffff-no-rj",
+                        "width": 88,
+                        "height": 88
+                    },
+                    "medium": {
+                        "url": "https://yt3.ggpht.com/eIf5fNPcIcj9ig-wZBeq4stFy1lgjWTW1nLT5dYlFkHZprZ03QBiMcbpwNMB6XSBjrSFGtAGQg=s240-c-k-c0x00ffffff-no-rj",
+                        "width": 240,
+                        "height": 240
+                    },
+                    "high": {
+                        "url": "https://yt3.ggpht.com/eIf5fNPcIcj9ig-wZBeq4stFy1lgjWTW1nLT5dYlFkHZprZ03QBiMcbpwNMB6XSBjrSFGtAGQg=s800-c-k-c0x00ffffff-no-rj",
+                        "width": 800,
+                        "height": 800
+                    }
+                },
+                "localized": {
+                    "title": "NASA",
+                    "description": "NASA's mission is to pioneer the future in space exploration, scientific discovery, and aeronautics research.\r\n\r\nTo do that, we have worked around the world—and off it—for more than 60 years, searching for answers to fundamental questions about our place in the universe. We're exploring space and discovering Earth. Join us on this exciting and important journey.\n"
+                }
+            },
+            "contentDetails": {
+                "relatedPlaylists": {
+                    "likes": "",
+                    "uploads": "UULA_DiR1FfKNvjuUpBHmylQ"
+                }
+            },
+            "statistics": {
+                "viewCount": "1122154415",
+                "subscriberCount": "15000000",
+                "hiddenSubscriberCount": false,
+                "videoCount": "6143"
+            }
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+version: 2
+
+updates:
+  # Only the actions themselves. Composer is deliberately left out: this is a
+  # library with no committed lock file, so there is nothing for Dependabot to
+  # pin, and each supported PHP version must stay free to resolve its own
+  # PHPUnit major.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'ci'
