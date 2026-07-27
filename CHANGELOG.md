@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `parseVIdFromURL()` now understands Shorts URLs (`youtube.com/shorts/xxxx`).
   Reported in [#79](https://github.com/madcoda/php-youtube-api/pull/79) by
   [@malbero](https://github.com/malbero).
+- `parseVIdFromURL()` now understands two further path forms:
+  `youtube.com/live/xxxx`, which is what live streams and the VODs they leave
+  behind are shared as, and the legacy embed URL `youtube.com/v/xxxx`, which is
+  still present in a lot of older content. Both accept a query string and a
+  trailing slash, and both work with or without `www` and with or without a
+  scheme, exactly as `/embed/` and `/shorts/` already did. Requested in
+  [#85](https://github.com/madcoda/php-youtube-api/issues/85).
 
 ### Fixed
 
@@ -27,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   word. Both `/embed/` and `/shorts/` are now matched as path prefixes, and only
   the first path segment is taken as the id, so a trailing slash is no longer
   included in the returned id.
+- A short URL written with a trailing slash, `youtu.be/xxxx/`, returned the id
+  with the slash still attached (`xxxx/`), which then produced 404s from the API
+  for anyone passing the result straight through. The `youtu.be` branch took the
+  whole path rather than its first segment; it now follows the same rule as the
+  path-prefix forms. Reported alongside
+  [#85](https://github.com/madcoda/php-youtube-api/issues/85).
 
 ## [1.3.0] - 2026-07-27
 
