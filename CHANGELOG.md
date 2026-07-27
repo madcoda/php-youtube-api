@@ -24,6 +24,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [#71](https://github.com/madcoda/php-youtube-api/pull/71) by
   [@tyteck](https://github.com/tyteck).
 
+### Changed
+
+- `getPlaylistsByChannelId()` now rejects a `null` channel id before making a
+  request, throwing `InvalidArgumentException` the way the other `...Advanced()`
+  methods already do for their required ids. Previously the `null` was passed
+  through as an empty `channelId` parameter and the request was sent anyway, so
+  the caller paid a quota unit to have the API reject it. Any other value,
+  including the empty string, reaches the API exactly as before. Callers that
+  catch `\Exception` are unaffected, since `InvalidArgumentException` extends it.
+
 ### Fixed
 
 - `parseVIdFromURL()` discarded the video id whenever a path-style URL carried a
