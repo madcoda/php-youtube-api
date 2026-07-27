@@ -131,8 +131,20 @@ record('channels.multiple', function () use ($youtube) {
     $youtube->getChannelsById(array(Subjects::CHANNEL, Subjects::CHANNEL_SECOND));
 });
 
-record('playlists', function () use ($youtube) {
+// Page one, keeping the token so page two can be recorded with a prevPageToken.
+$playlistsNextPageToken = null;
+record('playlists', function () use ($youtube, &$playlistsNextPageToken) {
     $youtube->getPlaylistsByChannelId(Subjects::CHANNEL_SECOND, array('maxResults' => 3));
+    $playlistsNextPageToken = $youtube->page_info['nextPageToken'];
+});
+
+record('playlists.page2', function () use ($youtube, &$playlistsNextPageToken) {
+    $youtube->getPlaylistsByChannelIdAdvanced(array(
+        'channelId'  => Subjects::CHANNEL_SECOND,
+        'part'       => 'id, snippet, status',
+        'maxResults' => 3,
+        'pageToken'  => $playlistsNextPageToken,
+    ));
 });
 
 record('playlistItems', function () use ($youtube) {

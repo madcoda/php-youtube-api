@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `parseVIdFromURL()` now understands Shorts URLs (`youtube.com/shorts/xxxx`).
   Reported in [#79](https://github.com/madcoda/php-youtube-api/pull/79) by
   [@malbero](https://github.com/malbero).
+- `getPlaylistsByChannelIdAdvanced($params, $pageInfo = false)`, which takes raw
+  `playlists.list` parameters and can return the pagination envelope alongside
+  the results. `getPlaylistsByChannelId()` returned one page and gave the caller
+  no way to read `nextPageToken`, so a channel with more playlists than a single
+  page holds was silently truncated; passing a `pageToken` through `$params` and
+  reading the next one back from `info` now walks the whole channel.
+  `getPlaylistsByChannelId()` is unchanged for existing callers and is now a thin
+  wrapper over the new method, the same way `getPlaylistItemsByPlaylistId()`
+  wraps its own `...Advanced()` counterpart. Originally proposed in
+  [#71](https://github.com/madcoda/php-youtube-api/pull/71) by
+  [@tyteck](https://github.com/tyteck).
 
 ### Fixed
 
