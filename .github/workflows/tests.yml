@@ -92,7 +92,7 @@ jobs:
       - name: Run tests with coverage
         run: vendor/bin/phpunit --coverage-clover=coverage.xml --coverage-filter=src
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v7
         with:
           files: ./coverage.xml
           fail_ci_if_error: false
