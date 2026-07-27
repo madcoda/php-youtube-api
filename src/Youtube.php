@@ -538,7 +538,8 @@ class Youtube
     /**
      * Parse a youtube URL to get the youtube Vid.
      * Supports the full URL (www.youtube.com/watch?v=xxxx), the short URL
-     * (youtu.be/xxxx), and the /embed/xxxx and /shorts/xxxx path forms.
+     * (youtu.be/xxxx), and the /embed/xxxx, /shorts/xxxx, /live/xxxx and
+     * /v/xxxx path forms.
      *
      * @param  string $youtube_url
      * @throws \Exception
@@ -561,11 +562,13 @@ class Youtube
         // URLs such as "youtube.com/watch?v=..." are rejected as invalid.
         if (strpos($url, 'youtube.com') !== false) {
             // These forms carry the id in the path rather than in a ?v= param.
-            // Match on the path so that "embed"/"shorts" appearing anywhere
-            // else in the URL (a query value, or the id itself) is not
-            // mistaken for a path of that kind.
+            // Match on the path so that "embed"/"shorts"/"live"/"v" appearing
+            // anywhere else in the URL (a query value, or the id itself) is not
+            // mistaken for a path of that kind. /live/ covers live streams and
+            // the VODs they leave behind; /v/ is the legacy embed URL, still
+            // common in old content.
             $path = static::_parse_url_path($url);
-            foreach (array('/embed/', '/shorts/') as $prefix) {
+            foreach (array('/embed/', '/shorts/', '/live/', '/v/') as $prefix) {
                 if (strpos($path, $prefix) === 0) {
                     // Only the first segment is the id; anything after it is a
                     // trailing slash or extra path we should not swallow.
@@ -584,7 +587,11 @@ class Youtube
             }
         } elseif (strpos($url, 'youtu.be') !== false) {
             $path = static::_parse_url_path($url);
-            $videoId = substr($path, 1);
+            // The whole path used to be taken as the id, so "youtu.be/xxxx/"
+            // returned "xxxx/". Take the first segment only, exactly as the
+            // path-prefix branch above does.
+            $segments = explode('/', ltrim($path, '/'));
+            $videoId = $segments[0];
         }
 
         if (empty($videoId)) {
