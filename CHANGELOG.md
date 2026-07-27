@@ -5,7 +5,11 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.4.0] - 2026-07-27
+
+URL parsing that keeps up with how Youtube links are actually shared today, and a
+way to page through a channel's playlists. Additive only, so this is a drop-in
+upgrade from 1.3.0, with one narrow behaviour change noted under Changed.
 
 ### Added
 
