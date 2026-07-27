@@ -38,5 +38,15 @@
     },
     "scripts": {
         "test": "phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Madcoda\\Youtube\\YoutubeServiceProviderLaravel5"
+            ],
+            "aliases": {
+                "Youtube": "Madcoda\\Youtube\\Facades\\Youtube"
+            }
+        }
     }
 }
