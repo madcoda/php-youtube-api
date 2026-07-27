@@ -1,0 +1,47 @@
+{
+  "kind": "youtube#videoListResponse",
+  "etag": "etag-videos-single",
+  "pageInfo": {
+    "totalResults": 1,
+    "resultsPerPage": 1
+  },
+  "items": [
+    {
+      "kind": "youtube#video",
+      "etag": "etag-video-1",
+      "id": "rie-hPVJ7Sw",
+      "snippet": {
+        "publishedAt": "2012-10-01T12:00:00Z",
+        "channelId": "UCK8sQmJBp8GCxrOtXWBpyEA",
+        "title": "A test video",
+        "description": "Fixture description.",
+        "channelTitle": "Google",
+        "tags": ["fixture"],
+        "categoryId": "22"
+      },
+      "contentDetails": {
+        "duration": "PT4M13S",
+        "dimension": "2d",
+        "definition": "hd",
+        "caption": "false",
+        "licensedContent": true
+      },
+      "player": {
+        "embedHtml": "<iframe src=\"//www.youtube.com/embed/rie-hPVJ7Sw\"></iframe>"
+      },
+      "statistics": {
+        "viewCount": "123456",
+        "likeCount": "1234",
+        "favoriteCount": "0",
+        "commentCount": "56"
+      },
+      "status": {
+        "uploadStatus": "processed",
+        "privacyStatus": "public",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "youtube#searchListResponse",
+  "etag": "etag-search-empty",
+  "regionCode": "US",
+  "pageInfo": {
+    "totalResults": 0,
+    "resultsPerPage": 0
+  },
+  "items": []
+}

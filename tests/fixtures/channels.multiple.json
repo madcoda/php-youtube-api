@@ -1,0 +1,26 @@
+{
+  "kind": "youtube#channelListResponse",
+  "etag": "etag-channels-multiple",
+  "pageInfo": {
+    "totalResults": 2,
+    "resultsPerPage": 5
+  },
+  "items": [
+    {
+      "kind": "youtube#channel",
+      "etag": "etag-channel-1",
+      "id": "UCk1SpWNzOs4MYmr0uICEntg",
+      "snippet": { "title": "First channel" },
+      "contentDetails": { "relatedPlaylists": { "uploads": "UUk1SpWNzOs4MYmr0uICEntg" } },
+      "statistics": { "subscriberCount": "1000" }
+    },
+    {
+      "kind": "youtube#channel",
+      "etag": "etag-channel-2",
+      "id": "UCK8sQmJBp8GCxrOtXWBpyEA",
+      "snippet": { "title": "Google" },
+      "contentDetails": { "relatedPlaylists": { "uploads": "UUK8sQmJBp8GCxrOtXWBpyEA" } },
+      "statistics": { "subscriberCount": "12300000" }
+    }
+  ]
+}

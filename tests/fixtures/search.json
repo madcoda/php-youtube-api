@@ -1,0 +1,30 @@
+{
+  "kind": "youtube#searchListResponse",
+  "etag": "etag-search",
+  "nextPageToken": "CAUQAA",
+  "regionCode": "US",
+  "pageInfo": {
+    "totalResults": 1000000,
+    "resultsPerPage": 3
+  },
+  "items": [
+    {
+      "kind": "youtube#searchResult",
+      "etag": "etag-result-1",
+      "id": { "kind": "youtube#video", "videoId": "rie-hPVJ7Sw" },
+      "snippet": { "title": "Android one", "channelTitle": "Android" }
+    },
+    {
+      "kind": "youtube#searchResult",
+      "etag": "etag-result-2",
+      "id": { "kind": "youtube#video", "videoId": "lRRk97FYLJM" },
+      "snippet": { "title": "Android two", "channelTitle": "Android" }
+    },
+    {
+      "kind": "youtube#searchResult",
+      "etag": "etag-result-3",
+      "id": { "kind": "youtube#video", "videoId": "1FJHYqE0RDg" },
+      "snippet": { "title": "Android three", "channelTitle": "Android" }
+    }
+  ]
+}

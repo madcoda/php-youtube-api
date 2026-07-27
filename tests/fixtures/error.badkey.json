@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": 400,
+    "message": "API key not valid. Please pass a valid API key.",
+    "errors": [
+      {
+        "domain": "global",
+        "reason": "badRequest",
+        "message": "API key not valid. Please pass a valid API key."
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "kind": "youtube#playlistListResponse",
+  "etag": "etag-playlists",
+  "pageInfo": {
+    "totalResults": 2,
+    "resultsPerPage": 5
+  },
+  "items": [
+    {
+      "kind": "youtube#playlist",
+      "etag": "etag-playlist-1",
+      "id": "PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs",
+      "snippet": { "title": "Zeitgeist", "channelTitle": "Google" },
+      "status": { "privacyStatus": "public" }
+    },
+    {
+      "kind": "youtube#playlist",
+      "etag": "etag-playlist-2",
+      "id": "PL590L5WQmH8dpP0RyH5pCfIaDEdt9nk7r",
+      "snippet": { "title": "Another playlist", "channelTitle": "Google" },
+      "status": { "privacyStatus": "public" }
+    }
+  ]
+}

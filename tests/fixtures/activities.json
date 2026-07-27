@@ -1,0 +1,25 @@
+{
+  "kind": "youtube#activityListResponse",
+  "etag": "etag-activities",
+  "pageInfo": {
+    "totalResults": 1,
+    "resultsPerPage": 5
+  },
+  "items": [
+    {
+      "kind": "youtube#activity",
+      "etag": "etag-activity-1",
+      "id": "activity-1",
+      "snippet": {
+        "publishedAt": "2021-01-01T00:00:00Z",
+        "channelId": "UCK8sQmJBp8GCxrOtXWBpyEA",
+        "title": "Uploaded a video",
+        "channelTitle": "Google",
+        "type": "upload"
+      },
+      "contentDetails": {
+        "upload": { "videoId": "rie-hPVJ7Sw" }
+      }
+    }
+  ]
+}

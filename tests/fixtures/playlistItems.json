@@ -1,0 +1,37 @@
+{
+  "kind": "youtube#playlistItemListResponse",
+  "etag": "etag-playlistitems",
+  "nextPageToken": "CDIQAA",
+  "pageInfo": {
+    "totalResults": 120,
+    "resultsPerPage": 2
+  },
+  "items": [
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "etag-item-1",
+      "id": "item-1",
+      "snippet": {
+        "title": "Playlist entry one",
+        "playlistId": "PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs",
+        "position": 0,
+        "resourceId": { "kind": "youtube#video", "videoId": "rie-hPVJ7Sw" }
+      },
+      "contentDetails": { "videoId": "rie-hPVJ7Sw" },
+      "status": { "privacyStatus": "public" }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "etag-item-2",
+      "id": "item-2",
+      "snippet": {
+        "title": "Playlist entry two",
+        "playlistId": "PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs",
+        "position": 1,
+        "resourceId": { "kind": "youtube#video", "videoId": "lRRk97FYLJM" }
+      },
+      "contentDetails": { "videoId": "lRRk97FYLJM" },
+      "status": { "privacyStatus": "public" }
+    }
+  ]
+}

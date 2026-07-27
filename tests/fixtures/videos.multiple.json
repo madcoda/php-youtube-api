@@ -1,0 +1,28 @@
+{
+  "kind": "youtube#videoListResponse",
+  "etag": "etag-videos-multiple",
+  "pageInfo": {
+    "totalResults": 2,
+    "resultsPerPage": 2
+  },
+  "items": [
+    {
+      "kind": "youtube#video",
+      "etag": "etag-video-1",
+      "id": "rie-hPVJ7Sw",
+      "snippet": { "title": "First", "channelTitle": "Google" },
+      "contentDetails": { "duration": "PT4M13S" },
+      "statistics": { "viewCount": "123456" },
+      "status": { "privacyStatus": "public" }
+    },
+    {
+      "kind": "youtube#video",
+      "etag": "etag-video-2",
+      "id": "lRRk97FYLJM",
+      "snippet": { "title": "Second", "channelTitle": "Google" },
+      "contentDetails": { "duration": "PT2M02S" },
+      "statistics": { "viewCount": "654321" },
+      "status": { "privacyStatus": "public" }
+    }
+  ]
+}
