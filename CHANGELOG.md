@@ -5,6 +5,29 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `parseVIdFromURL()` now understands Shorts URLs (`youtube.com/shorts/xxxx`).
+  Reported in [#79](https://github.com/madcoda/php-youtube-api/pull/79) by
+  [@malbero](https://github.com/malbero).
+
+### Fixed
+
+- `parseVIdFromURL()` discarded the video id whenever a path-style URL carried a
+  query string, because the `?v=` branch assigned `null` unconditionally when no
+  `v` parameter was present. `youtube.com/embed/xxxx?start=30` and
+  `youtube.com/shorts/xxxx?feature=share` both threw
+  "The supplied URL does not look like a Youtube URL". A `?v=` parameter still
+  takes precedence when one is actually present. Also from
+  [#79](https://github.com/madcoda/php-youtube-api/pull/79).
+- `/embed/` was matched anywhere in the URL rather than at the start of the path,
+  so the id was parsed from the wrong offset for URLs that merely contained the
+  word. Both `/embed/` and `/shorts/` are now matched as path prefixes, and only
+  the first path segment is taken as the id, so a trailing slash is no longer
+  included in the returned id.
+
 ## [1.3.0] - 2026-07-27
 
 Support for current PHP, with the PHP 7.0 floor kept intact. There are no public

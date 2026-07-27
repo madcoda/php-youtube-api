@@ -27,6 +27,24 @@ class UrlParsingTest extends TestCase
 
             // Protocol-relative URLs, as produced by embed snippets.
             'protocol-relative'     => array('//www.youtube.com/watch?v=1FJHYqE0RDg', '1FJHYqE0RDg'),
+
+            // Shorts, which put the id in the path like /embed/ does.
+            'shorts'                => array('https://www.youtube.com/shorts/j6bTvzE0Xtk', 'j6bTvzE0Xtk'),
+            'shorts without www'    => array('https://youtube.com/shorts/j6bTvzE0Xtk', 'j6bTvzE0Xtk'),
+            'scheme-less shorts'    => array('youtube.com/shorts/j6bTvzE0Xtk', 'j6bTvzE0Xtk'),
+            'shorts trailing slash' => array('https://www.youtube.com/shorts/j6bTvzE0Xtk/', 'j6bTvzE0Xtk'),
+
+            // Regression: the query branch assigned null whenever a path-style
+            // URL carried any query string, discarding the id just parsed out
+            // of the path. Both of these threw before.
+            'shorts with query'     => array('https://youtube.com/shorts/j6bTvzE0Xtk?feature=share', 'j6bTvzE0Xtk'),
+            'embed with query'      => array('https://www.youtube.com/embed/_vA5PvDfNTs?start=30', '_vA5PvDfNTs'),
+            'embed trailing slash'  => array('https://www.youtube.com/embed/_vA5PvDfNTs/', '_vA5PvDfNTs'),
+
+            // "embed" and "shorts" only count as a path prefix, never as a
+            // substring of the id or of a query value.
+            'id containing embed'   => array('https://www.youtube.com/watch?v=embedFHYqE0R', 'embedFHYqE0R'),
+            'shorts in query value' => array('https://www.youtube.com/watch?v=1FJHYqE0RDg&list=shorts', '1FJHYqE0RDg'),
         );
     }
 
@@ -46,6 +64,9 @@ class UrlParsingTest extends TestCase
             'other site'     => array('http://www.facebook.com'),
             'empty string'   => array(''),
             'no video id'    => array('https://www.youtube.com/watch'),
+            'v param absent' => array('https://www.youtube.com/watch?t=42s'),
+            'bare shorts'    => array('https://www.youtube.com/shorts/'),
+            'bare embed'     => array('https://www.youtube.com/embed/'),
         );
     }
 
