@@ -3,6 +3,8 @@
 namespace Madcoda\Youtube;
 
 use Madcoda\Youtube\Constants;
+use Madcoda\Youtube\Http\CurlHttpClient;
+use Madcoda\Youtube\Http\HttpClientInterface;
 
 /**
  * Youtube Data API (mainly apis for retrieving data)
@@ -50,6 +52,14 @@ class Youtube
      * @var string
      */
     protected $sslPath = null;
+
+
+    /**
+     * Transport used for every request. Created on first use if not injected.
+     *
+     * @var \Madcoda\Youtube\Http\HttpClientInterface
+     */
+    protected $httpClient = null;
 
 
     /**
@@ -131,6 +141,38 @@ class Youtube
     public function setReferer($referer)
     {
         $this->referer = $referer;
+
+        // Keep an already-created default transport in step with the change.
+        if ($this->httpClient instanceof CurlHttpClient) {
+            $this->httpClient->setReferer($referer);
+        }
+    }
+
+    /**
+     * Supply the transport used for every request.
+     *
+     * Injecting a client lets the library be driven without a network
+     * connection, which is how the offline test suite runs.
+     *
+     * @param HttpClientInterface $httpClient
+     */
+    public function setHttpClient(HttpClientInterface $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
+
+    /**
+     * The transport in use, creating the ext-curl default on first call.
+     *
+     * @return HttpClientInterface
+     */
+    public function getHttpClient()
+    {
+        if ($this->httpClient === null) {
+            $this->httpClient = new CurlHttpClient($this->referer, $this->sslPath);
+        }
+
+        return $this->httpClient;
     }
 
     /**
@@ -647,31 +689,7 @@ class Youtube
         //set the youtube key
         $params['key'] = $this->youtube_key;
 
-        //boilerplates for CURL
-        $tuCurl = curl_init();
-        if ($this->sslPath !== null) {
-            curl_setopt($tuCurl, CURLOPT_SSL_VERIFYPEER, true);
-            curl_setopt($tuCurl, CURLOPT_SSL_VERIFYHOST, 2);
-            // The supplied path was previously ignored: both options were
-            // hardcoded to the CA bundle vendored in src/cert, silently
-            // replacing the system trust store with a 2013-vintage snapshot.
-            // CAPATH also expects a directory, not a file.
-            if (is_dir($this->sslPath)) {
-                curl_setopt($tuCurl, CURLOPT_CAPATH, $this->sslPath);
-            } else {
-                curl_setopt($tuCurl, CURLOPT_CAINFO, $this->sslPath);
-            }
-        }
-        curl_setopt($tuCurl, CURLOPT_URL, $url . (strpos($url, '?') === false ? '?' : '') . http_build_query($params));
-        if ($this->referer !== null) {
-            curl_setopt($tuCurl, CURLOPT_REFERER, $this->referer);
-        }
-        curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, 1);
-        $tuData = curl_exec($tuCurl);
-        if (curl_errno($tuCurl)) {
-            throw new \Exception('Curl Error : ' . curl_error($tuCurl), curl_errno($tuCurl));
-        }
-        return $tuData;
+        return $this->getHttpClient()->get($url, $params);
     }
 
 
