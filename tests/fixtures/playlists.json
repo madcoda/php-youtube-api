@@ -1,24 +1,150 @@
 {
-  "kind": "youtube#playlistListResponse",
-  "etag": "etag-playlists",
-  "pageInfo": {
-    "totalResults": 2,
-    "resultsPerPage": 5
-  },
-  "items": [
-    {
-      "kind": "youtube#playlist",
-      "etag": "etag-playlist-1",
-      "id": "PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs",
-      "snippet": { "title": "Zeitgeist", "channelTitle": "Google" },
-      "status": { "privacyStatus": "public" }
+    "kind": "youtube#playlistListResponse",
+    "etag": "sOCDm_8lMbxqYHevvSMx9CHlNGY",
+    "nextPageToken": "CAMQAA",
+    "pageInfo": {
+        "totalResults": 115,
+        "resultsPerPage": 3
     },
-    {
-      "kind": "youtube#playlist",
-      "etag": "etag-playlist-2",
-      "id": "PL590L5WQmH8dpP0RyH5pCfIaDEdt9nk7r",
-      "snippet": { "title": "Another playlist", "channelTitle": "Google" },
-      "status": { "privacyStatus": "public" }
-    }
-  ]
+    "items": [
+        {
+            "kind": "youtube#playlist",
+            "etag": "wMH97AiJZpnJNiT7IJHDIngxgJ0",
+            "id": "PL2aBZuCeDwlRaF6AIey7ulmW1X0SHI1mQ",
+            "snippet": {
+                "publishedAt": "2026-06-08T18:21:32.671325Z",
+                "channelId": "UCLA_DiR1FfKNvjuUpBHmylQ",
+                "title": "Artemis III",
+                "description": "",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/yMoGiIeDH9s/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/yMoGiIeDH9s/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/yMoGiIeDH9s/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    },
+                    "standard": {
+                        "url": "https://i.ytimg.com/vi/yMoGiIeDH9s/sddefault.jpg",
+                        "width": 640,
+                        "height": 480
+                    },
+                    "maxres": {
+                        "url": "https://i.ytimg.com/vi/yMoGiIeDH9s/maxresdefault.jpg",
+                        "width": 1280,
+                        "height": 720
+                    }
+                },
+                "channelTitle": "NASA",
+                "localized": {
+                    "title": "Artemis III",
+                    "description": ""
+                }
+            },
+            "status": {
+                "privacyStatus": "public"
+            }
+        },
+        {
+            "kind": "youtube#playlist",
+            "etag": "ivZlF1q6kHnbTEnsW3mnjELNU_o",
+            "id": "PL2aBZuCeDwlSZtPohs7riBBDIgl9D5ltA",
+            "snippet": {
+                "publishedAt": "2026-04-03T22:10:42.978467Z",
+                "channelId": "UCLA_DiR1FfKNvjuUpBHmylQ",
+                "title": "Artemis II Astronauts",
+                "description": "",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/7xz9s8cVFE4/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/7xz9s8cVFE4/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/7xz9s8cVFE4/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    },
+                    "standard": {
+                        "url": "https://i.ytimg.com/vi/7xz9s8cVFE4/sddefault.jpg",
+                        "width": 640,
+                        "height": 480
+                    },
+                    "maxres": {
+                        "url": "https://i.ytimg.com/vi/7xz9s8cVFE4/maxresdefault.jpg",
+                        "width": 1280,
+                        "height": 720
+                    }
+                },
+                "channelTitle": "NASA",
+                "localized": {
+                    "title": "Artemis II Astronauts",
+                    "description": ""
+                }
+            },
+            "status": {
+                "privacyStatus": "public"
+            }
+        },
+        {
+            "kind": "youtube#playlist",
+            "etag": "ZwLWE30-GY3tBEEWoUMJUPd5tYc",
+            "id": "PL2aBZuCeDwlQvNtHhNJtarm9OewQwVntv",
+            "snippet": {
+                "publishedAt": "2026-02-03T19:04:23.297443Z",
+                "channelId": "UCLA_DiR1FfKNvjuUpBHmylQ",
+                "title": "Artemis II Mission Coverage",
+                "description": "",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/DYY4nnfxKbU/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/DYY4nnfxKbU/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/DYY4nnfxKbU/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    },
+                    "standard": {
+                        "url": "https://i.ytimg.com/vi/DYY4nnfxKbU/sddefault.jpg",
+                        "width": 640,
+                        "height": 480
+                    },
+                    "maxres": {
+                        "url": "https://i.ytimg.com/vi/DYY4nnfxKbU/maxresdefault.jpg",
+                        "width": 1280,
+                        "height": 720
+                    }
+                },
+                "channelTitle": "NASA",
+                "defaultLanguage": "en",
+                "localized": {
+                    "title": "Artemis II Mission Coverage",
+                    "description": ""
+                }
+            },
+            "status": {
+                "privacyStatus": "public"
+            }
+        }
+    ]
 }

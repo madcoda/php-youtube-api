@@ -22,6 +22,11 @@ API removals, so this is a drop-in upgrade from 1.2.x.
   registered automatically on Laravel 5.5 and newer.
 - GitHub Actions CI across the full supported matrix, plus PHPStan (level 5)
   and PSR-12 checks.
+- `tests/tools/record-fixtures.php`, which re-records every fixture from live
+  responses in one command, and a fixture-drift test that fails when a fixture
+  records a field the API has stopped returning. Together these stop the
+  offline suite from silently asserting against a shape Youtube no longer
+  produces.
 - `ext-json` is now declared. The library has always used `json_decode()`.
 
 ### Fixed
@@ -71,8 +76,15 @@ API removals, so this is a drop-in upgrade from 1.2.x.
 ### Changed
 
 - The test suite no longer requires an API key or network access. It runs
-  against recorded fixtures. The tests that talk to the real API are kept in a
-  separate `live` group, excluded by default, and run on a schedule in CI.
+  against recorded fixtures captured from real API responses. The tests that
+  talk to the real API are kept in a separate `live` group, excluded by
+  default, and run on a schedule in CI.
+- Test subjects were replaced with durable ones and centralised in
+  `tests/Subjects.php`. The previous suite used whatever was to hand in 2013:
+  one of its videos has since been deleted outright, and two others turned out
+  to live on unofficial re-upload channels rather than the rights holders'.
+  Playlist tests now use a channel's uploads playlist, which cannot be deleted
+  while the channel exists, instead of a curated playlist that can.
 - Code style moved from PSR-2 to PSR-12, enforced by PHP-CS-Fixer instead of
   StyleCI. Class constants keep no visibility modifier, because `public const`
   is PHP 7.1+ syntax and would not parse on the 7.0 floor.

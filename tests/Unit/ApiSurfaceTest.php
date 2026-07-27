@@ -3,6 +3,7 @@
 namespace Madcoda\Youtube\Tests\Unit;
 
 use Madcoda\Youtube\Tests\Fake\ArrayHttpClient;
+use Madcoda\Youtube\Tests\Subjects;
 use Madcoda\Youtube\Tests\TestCase;
 use Madcoda\Youtube\Youtube;
 
@@ -10,6 +11,11 @@ use Madcoda\Youtube\Youtube;
  * Exercises the whole public API through an injected transport, asserting both
  * the request the library builds and what it does with the response. No network
  * and no API key.
+ *
+ * Values that originate at Google are asserted against the fixture's own
+ * contents so that re-recording does not break the suite. Values the library
+ * produces -- endpoints, parameter names, the injected key -- are asserted as
+ * literals, since those are the thing under test.
  */
 class ApiSurfaceTest extends TestCase
 {
@@ -40,27 +46,42 @@ class ApiSurfaceTest extends TestCase
     public function testGetVideoInfo()
     {
         $this->respondWith('videos.single');
-        $video = $this->youtube->getVideoInfo('rie-hPVJ7Sw');
+        $raw = $this->fixtureData('videos.single');
 
-        $this->assertSame('rie-hPVJ7Sw', $video->id);
+        $video = $this->youtube->getVideoInfo(Subjects::VIDEO);
+
+        $this->assertSame(Subjects::VIDEO, $video->id);
         $this->assertSame('youtube#video', $video->kind);
+        $this->assertSame($raw->items[0]->snippet->title, $video->snippet->title);
         $this->assertObjectHasProperty('snippet', $video);
         $this->assertObjectHasProperty('statistics', $video);
         $this->assertObjectHasProperty('contentDetails', $video);
         $this->assertObjectHasProperty('status', $video);
 
         $this->assertSame('https://www.googleapis.com/youtube/v3/videos', $this->http->url());
-        $this->assertSame('rie-hPVJ7Sw', $this->http->params()['id']);
+        $this->assertSame(Subjects::VIDEO, $this->http->params()['id']);
+    }
+
+    public function testGetVideoInfoReturnsFalseWhenTheVideoIsGone()
+    {
+        $this->respondWith('videos.empty');
+
+        $this->assertFalse($this->youtube->getVideoInfo(Subjects::VIDEO_UNAVAILABLE));
     }
 
     public function testGetVideosInfoJoinsIdsWithCommas()
     {
         $this->respondWith('videos.multiple');
-        $videos = $this->youtube->getVideosInfo(array('rie-hPVJ7Sw', 'lRRk97FYLJM'));
+        $raw = $this->fixtureData('videos.multiple');
+
+        $videos = $this->youtube->getVideosInfo(array(Subjects::VIDEO, Subjects::VIDEO_SECOND));
 
         $this->assertIsArray($videos);
-        $this->assertCount(2, $videos);
-        $this->assertSame('rie-hPVJ7Sw,lRRk97FYLJM', $this->http->params()['id']);
+        $this->assertCount(count($raw->items), $videos);
+        $this->assertSame(
+            Subjects::VIDEO . ',' . Subjects::VIDEO_SECOND,
+            $this->http->params()['id']
+        );
     }
 
     public function testGetVideosInfoAcceptsAPreJoinedString()
@@ -76,18 +97,20 @@ class ApiSurfaceTest extends TestCase
     public function testSearch()
     {
         $this->respondWith('search');
-        $results = $this->youtube->search('Android', 3);
+        $raw = $this->fixtureData('search');
 
-        $this->assertCount(3, $results);
+        $results = $this->youtube->search(Subjects::SEARCH_QUERY, 3);
+
+        $this->assertCount(count($raw->items), $results);
         $this->assertSame('youtube#searchResult', $results[0]->kind);
-        $this->assertSame('Android', $this->http->params()['q']);
+        $this->assertSame(Subjects::SEARCH_QUERY, $this->http->params()['q']);
         $this->assertSame(3, $this->http->params()['maxResults']);
     }
 
     public function testSearchVideosSetsTypeAndOrder()
     {
         $this->respondWith('search');
-        $this->youtube->searchVideos('Android', 5, 'title');
+        $this->youtube->searchVideos(Subjects::SEARCH_QUERY, 5, 'title');
 
         $params = $this->http->params();
         $this->assertSame('video', $params['type']);
@@ -98,7 +121,7 @@ class ApiSurfaceTest extends TestCase
     public function testSearchVideosOmitsOrderWhenNotGiven()
     {
         $this->respondWith('search');
-        $this->youtube->searchVideos('Android', 5);
+        $this->youtube->searchVideos(Subjects::SEARCH_QUERY, 5);
 
         $this->assertArrayNotHasKey('order', $this->http->params());
     }
@@ -106,17 +129,17 @@ class ApiSurfaceTest extends TestCase
     public function testSearchChannelVideosScopesToTheChannel()
     {
         $this->respondWith('search');
-        $this->youtube->searchChannelVideos('Android', 'UCVHFbqXqoYvEWM1Ddxl0QDg', 4);
+        $this->youtube->searchChannelVideos(Subjects::SEARCH_QUERY, Subjects::CHANNEL_SECOND, 4);
 
         $params = $this->http->params();
-        $this->assertSame('UCVHFbqXqoYvEWM1Ddxl0QDg', $params['channelId']);
+        $this->assertSame(Subjects::CHANNEL_SECOND, $params['channelId']);
         $this->assertSame('video', $params['type']);
     }
 
     public function testSearchChannelLiveStreamSetsEventType()
     {
         $this->respondWith('search');
-        $this->youtube->searchChannelLiveStream('news', 'UCR3asjvr_WAaxwJYEDV_Bfw', 2);
+        $this->youtube->searchChannelLiveStream('news', Subjects::CHANNEL_SECOND, 2);
 
         $this->assertSame('live', $this->http->params()['eventType']);
     }
@@ -124,12 +147,14 @@ class ApiSurfaceTest extends TestCase
     public function testSearchAdvancedCanReturnPageInfo()
     {
         $this->respondWith('search');
-        $response = $this->youtube->searchAdvanced(array('q' => 'Android'), true);
+        $raw = $this->fixtureData('search');
+
+        $response = $this->youtube->searchAdvanced(array('q' => Subjects::SEARCH_QUERY), true);
 
         $this->assertArrayHasKey('results', $response);
         $this->assertArrayHasKey('info', $response);
-        $this->assertSame('youtube#searchListResponse', $response['info']['kind']);
-        $this->assertSame('CAUQAA', $response['info']['nextPageToken']);
+        $this->assertSame($raw->kind, $response['info']['kind']);
+        $this->assertSame($raw->nextPageToken, $response['info']['nextPageToken']);
     }
 
     public function testSearchAdvancedRequiresAQuery()
@@ -142,46 +167,59 @@ class ApiSurfaceTest extends TestCase
     {
         $this->respondWith('search.empty');
 
-        $this->assertFalse($this->youtube->searchAdvanced(array('q' => 'nothing-matches-this')));
+        $this->assertFalse(
+            $this->youtube->searchAdvanced(array('q' => Subjects::SEARCH_QUERY_NO_RESULTS))
+        );
     }
 
     public function testPaginateResultsPassesTheToken()
     {
         $this->respondWith('search.page2');
-        $response = $this->youtube->paginateResults(array('q' => 'Android'), 'CAUQAA');
+        $raw = $this->fixtureData('search.page2');
 
-        $this->assertSame('CAUQAA', $this->http->params()['pageToken']);
-        $this->assertSame('CAUQAQ', $response['info']['prevPageToken']);
+        $response = $this->youtube->paginateResults(array('q' => Subjects::SEARCH_QUERY), 'CAMQAA');
+
+        $this->assertSame('CAMQAA', $this->http->params()['pageToken']);
+        $this->assertSame($raw->prevPageToken, $response['info']['prevPageToken']);
     }
 
     public function testPaginateResultsOmitsTheTokenWhenNull()
     {
         $this->respondWith('search');
-        $this->youtube->paginateResults(array('q' => 'Android'), null);
+        $this->youtube->paginateResults(array('q' => Subjects::SEARCH_QUERY), null);
 
         $this->assertArrayNotHasKey('pageToken', $this->http->params());
     }
 
     // -------------------------------------------------------------- channels
 
-    public function testGetChannelByName()
+    public function testGetChannelByNameUsesForUsername()
     {
         $this->respondWith('channels.single');
-        $channel = $this->youtube->getChannelByName('Google');
+        $this->youtube->getChannelByName('SomeLegacyUsername');
+
+        $this->assertSame('SomeLegacyUsername', $this->http->params()['forUsername']);
+    }
+
+    public function testGetChannelById()
+    {
+        $this->respondWith('channels.single');
+        $raw = $this->fixtureData('channels.single');
+
+        $channel = $this->youtube->getChannelById(Subjects::CHANNEL);
 
         $this->assertSame('youtube#channel', $channel->kind);
-        $this->assertSame('Google', $channel->snippet->title);
-        $this->assertSame('Google', $this->http->params()['forUsername']);
+        $this->assertSame(Subjects::CHANNEL, $channel->id);
+        $this->assertSame($raw->items[0]->snippet->title, $channel->snippet->title);
+        $this->assertSame(Subjects::CHANNEL, $this->http->params()['id']);
     }
 
     public function testGetChannelByIdMergesOptionalParams()
     {
         $this->respondWith('channels.single');
-        $this->youtube->getChannelById('UCK8sQmJBp8GCxrOtXWBpyEA', array('order' => 'title'));
+        $this->youtube->getChannelById(Subjects::CHANNEL, array('order' => 'title'));
 
-        $params = $this->http->params();
-        $this->assertSame('UCK8sQmJBp8GCxrOtXWBpyEA', $params['id']);
-        $this->assertSame('title', $params['order']);
+        $this->assertSame('title', $this->http->params()['order']);
     }
 
     /**
@@ -191,7 +229,7 @@ class ApiSurfaceTest extends TestCase
     public function testGetChannelByIdIgnoresNonArrayOptionalParams()
     {
         $this->respondWith('channels.single');
-        $channel = $this->youtube->getChannelById('UCK8sQmJBp8GCxrOtXWBpyEA', true);
+        $channel = $this->youtube->getChannelById(Subjects::CHANNEL, true);
 
         $this->assertSame('youtube#channel', $channel->kind);
     }
@@ -199,13 +237,15 @@ class ApiSurfaceTest extends TestCase
     public function testGetChannelsByIdJoinsIds()
     {
         $this->respondWith('channels.multiple');
+        $raw = $this->fixtureData('channels.multiple');
+
         $channels = $this->youtube->getChannelsById(
-            array('UCk1SpWNzOs4MYmr0uICEntg', 'UCK8sQmJBp8GCxrOtXWBpyEA')
+            array(Subjects::CHANNEL, Subjects::CHANNEL_SECOND)
         );
 
-        $this->assertCount(2, $channels);
+        $this->assertCount(count($raw->items), $channels);
         $this->assertSame(
-            'UCk1SpWNzOs4MYmr0uICEntg,UCK8sQmJBp8GCxrOtXWBpyEA',
+            Subjects::CHANNEL . ',' . Subjects::CHANNEL_SECOND,
             $this->http->params()['id']
         );
     }
@@ -221,11 +261,11 @@ class ApiSurfaceTest extends TestCase
     {
         $this->respondWith('channels.single');
         $channel = $this->youtube->getChannelFromURL(
-            'https://www.youtube.com/channel/UCK8sQmJBp8GCxrOtXWBpyEA'
+            'https://www.youtube.com/channel/' . Subjects::CHANNEL
         );
 
-        $this->assertSame('UCK8sQmJBp8GCxrOtXWBpyEA', $channel->id);
-        $this->assertSame('UCK8sQmJBp8GCxrOtXWBpyEA', $this->http->params()['id']);
+        $this->assertSame(Subjects::CHANNEL, $channel->id);
+        $this->assertSame(Subjects::CHANNEL, $this->http->params()['id']);
     }
 
     public function testGetChannelFromUrlWithAUserPath()
@@ -245,7 +285,19 @@ class ApiSurfaceTest extends TestCase
     public function testGetChannelFromUrlRejectsAnUnknownYoutubePath()
     {
         $this->expectException('Exception');
-        $this->youtube->getChannelFromURL('https://www.youtube.com/invalid/UCyNF0DijeiZ8jhc_xlVa4Vg');
+        $this->youtube->getChannelFromURL('https://www.youtube.com/invalid/' . Subjects::CHANNEL);
+    }
+
+    /**
+     * Youtube replaced legacy usernames with @handles, and getChannelFromURL()
+     * has no branch for them: a handle URL is neither /channel nor /user, so it
+     * is rejected. Documented here because it is a real gap rather than
+     * intended behaviour, and supporting it is a feature, not a bug fix.
+     */
+    public function testGetChannelFromUrlDoesNotYetSupportHandles()
+    {
+        $this->expectException('Exception');
+        $this->youtube->getChannelFromURL('https://www.youtube.com/' . Subjects::CHANNEL_HANDLE);
     }
 
     // ------------------------------------------------------------- playlists
@@ -253,42 +305,49 @@ class ApiSurfaceTest extends TestCase
     public function testGetPlaylistsByChannelId()
     {
         $this->respondWith('playlists');
-        $playlists = $this->youtube->getPlaylistsByChannelId('UCK8sQmJBp8GCxrOtXWBpyEA');
+        $raw = $this->fixtureData('playlists');
 
-        $this->assertCount(2, $playlists);
+        $playlists = $this->youtube->getPlaylistsByChannelId(Subjects::CHANNEL_SECOND);
+
+        $this->assertCount(count($raw->items), $playlists);
         $this->assertSame('youtube#playlist', $playlists[0]->kind);
-        $this->assertSame('UCK8sQmJBp8GCxrOtXWBpyEA', $this->http->params()['channelId']);
+        $this->assertSame(Subjects::CHANNEL_SECOND, $this->http->params()['channelId']);
     }
 
     public function testGetPlaylistById()
     {
         $this->respondWith('playlists');
-        $playlist = $this->youtube->getPlaylistById('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs');
+        $playlist = $this->youtube->getPlaylistById(Subjects::PLAYLIST);
 
         $this->assertSame('youtube#playlist', $playlist->kind);
-        $this->assertSame('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs', $this->http->params()['id']);
+        $this->assertSame(Subjects::PLAYLIST, $this->http->params()['id']);
     }
 
     public function testGetPlaylistItemsByPlaylistId()
     {
         $this->respondWith('playlistItems');
-        $items = $this->youtube->getPlaylistItemsByPlaylistId('PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs', 2);
+        $raw = $this->fixtureData('playlistItems');
 
-        $this->assertCount(2, $items);
+        $items = $this->youtube->getPlaylistItemsByPlaylistId(Subjects::PLAYLIST, 3);
+
+        $this->assertCount(count($raw->items), $items);
         $this->assertSame('youtube#playlistItem', $items[0]->kind);
-        $this->assertSame(2, $this->http->params()['maxResults']);
+        $this->assertSame(3, $this->http->params()['maxResults']);
+        $this->assertSame(Subjects::PLAYLIST, $this->http->params()['playlistId']);
     }
 
     public function testGetPlaylistItemsAdvancedCanReturnPageInfo()
     {
         $this->respondWith('playlistItems');
+        $raw = $this->fixtureData('playlistItems');
+
         $response = $this->youtube->getPlaylistItemsByPlaylistIdAdvanced(
-            array('playlistId' => 'PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs'),
+            array('playlistId' => Subjects::PLAYLIST),
             true
         );
 
-        $this->assertSame('youtube#playlistItemListResponse', $response['info']['kind']);
-        $this->assertSame('CDIQAA', $response['info']['nextPageToken']);
+        $this->assertSame($raw->kind, $response['info']['kind']);
+        $this->assertSame($raw->nextPageToken, $response['info']['nextPageToken']);
     }
 
     public function testGetPlaylistItemsAdvancedRequiresAPlaylistId()
@@ -302,10 +361,13 @@ class ApiSurfaceTest extends TestCase
     public function testGetActivitiesByChannelId()
     {
         $this->respondWith('activities');
-        $activities = $this->youtube->getActivitiesByChannelId('UCK8sQmJBp8GCxrOtXWBpyEA');
+        $raw = $this->fixtureData('activities');
 
-        $this->assertCount(1, $activities);
+        $activities = $this->youtube->getActivitiesByChannelId(Subjects::CHANNEL_SECOND);
+
+        $this->assertCount(count($raw->items), $activities);
         $this->assertSame('youtube#activity', $activities[0]->kind);
+        $this->assertSame(Subjects::CHANNEL_SECOND, $this->http->params()['channelId']);
     }
 
     public function testGetActivitiesRequiresAChannelId()
@@ -322,7 +384,16 @@ class ApiSurfaceTest extends TestCase
 
         $this->expectException('Exception');
         $this->expectExceptionCode(403);
-        $this->youtube->getVideoInfo('rie-hPVJ7Sw');
+        $this->youtube->getVideoInfo(Subjects::VIDEO);
+    }
+
+    public function testAnInvalidKeyErrorBecomesAnException()
+    {
+        $this->respondWith('error.badkey');
+
+        $this->expectException('Exception');
+        $this->expectExceptionCode(400);
+        $this->youtube->getVideoInfo(Subjects::VIDEO);
     }
 
     public function testATransportFailurePropagates()
@@ -330,7 +401,7 @@ class ApiSurfaceTest extends TestCase
         $this->http->willThrow(new \Exception('Curl Error : Could not resolve host', 6));
 
         $this->expectException('Exception');
-        $this->youtube->getVideoInfo('rie-hPVJ7Sw');
+        $this->youtube->getVideoInfo(Subjects::VIDEO);
     }
 
     // -------------------------------------------------------- configuration
@@ -338,7 +409,7 @@ class ApiSurfaceTest extends TestCase
     public function testTheApiKeyIsSentOnEveryRequest()
     {
         $this->respondWith('videos.single');
-        $this->youtube->getVideoInfo('x');
+        $this->youtube->getVideoInfo(Subjects::VIDEO);
 
         $this->assertSame('TESTKEY', $this->http->params()['key']);
     }
@@ -347,7 +418,7 @@ class ApiSurfaceTest extends TestCase
     {
         $this->youtube->setApiKey('SECONDKEY');
         $this->respondWith('videos.single');
-        $this->youtube->getVideoInfo('x');
+        $this->youtube->getVideoInfo(Subjects::VIDEO);
 
         $this->assertSame('SECONDKEY', $this->http->params()['key']);
     }
@@ -356,7 +427,7 @@ class ApiSurfaceTest extends TestCase
     {
         $this->youtube->setAPIs(array('videos.list' => 'https://example.test/videos'));
         $this->respondWith('videos.single');
-        $this->youtube->getVideoInfo('x');
+        $this->youtube->getVideoInfo(Subjects::VIDEO);
 
         $this->assertSame('https://example.test/videos', $this->http->url());
     }

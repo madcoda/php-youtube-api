@@ -30,4 +30,23 @@ abstract class TestCase extends PolyfillTestCase
 
         return file_get_contents($path);
     }
+
+    /**
+     * The same fixture, decoded.
+     *
+     * Tests assert values that originate at Google (ids, tokens, counts)
+     * against this rather than against literals copied out of the file. That
+     * keeps the assertion meaningful -- it still catches decodeSingle picking
+     * the wrong item, or decodeList dropping one -- while surviving a
+     * re-record. Values the library itself produces, such as endpoints and
+     * parameter names, stay as literals, because those are the thing under
+     * test.
+     *
+     * @param  string    $name
+     * @return \StdClass
+     */
+    protected function fixtureData($name)
+    {
+        return json_decode($this->fixture($name));
+    }
 }

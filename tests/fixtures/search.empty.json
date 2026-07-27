@@ -1,10 +1,10 @@
 {
-  "kind": "youtube#searchListResponse",
-  "etag": "etag-search-empty",
-  "regionCode": "US",
-  "pageInfo": {
-    "totalResults": 0,
-    "resultsPerPage": 0
-  },
-  "items": []
+    "kind": "youtube#searchListResponse",
+    "etag": "gf3ZJLP2s-gj5Zj_B7VpwhDX2xY",
+    "regionCode": "SG",
+    "pageInfo": {
+        "totalResults": 0,
+        "resultsPerPage": 0
+    },
+    "items": []
 }

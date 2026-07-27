@@ -2,6 +2,7 @@
 
 namespace Madcoda\Youtube\Tests\Integration;
 
+use Madcoda\Youtube\Tests\Subjects;
 use Madcoda\Youtube\Tests\TestCase;
 use Madcoda\Youtube\Youtube;
 
@@ -13,10 +14,13 @@ use Madcoda\Youtube\Youtube;
  *
  *     YOUTUBE_API_KEY=... vendor/bin/phpunit --group live
  *
- * Their purpose is to catch changes in the API's response shape. Assertions are
- * deliberately about structure rather than exact values: the old suite asserted
- * on live data such as a channel being titled "Google" and on an exact result
- * count, which broke whenever Google changed anything.
+ * Their purpose is to catch changes in the API's behaviour. Assertions are
+ * about structure rather than exact values: the old suite asserted on live data
+ * such as a channel being titled "Google" and on an exact result count, which
+ * broke whenever Google changed anything.
+ *
+ * The subjects live in Subjects, and all of them are institutional or
+ * historically significant so they are unlikely to disappear.
  *
  * @group live
  */
@@ -40,9 +44,9 @@ class LiveApiTest extends TestCase
 
     public function testGetVideoInfoReturnsTheExpectedShape()
     {
-        $video = $this->youtube->getVideoInfo('rie-hPVJ7Sw');
+        $video = $this->youtube->getVideoInfo(Subjects::VIDEO);
 
-        $this->assertSame('rie-hPVJ7Sw', $video->id);
+        $this->assertSame(Subjects::VIDEO, $video->id);
         $this->assertSame('youtube#video', $video->kind);
         $this->assertObjectHasProperty('snippet', $video);
         $this->assertObjectHasProperty('statistics', $video);
@@ -52,10 +56,11 @@ class LiveApiTest extends TestCase
 
     public function testGetVideosInfoReturnsEachRequestedVideo()
     {
-        $ids = array('rie-hPVJ7Sw', 'lRRk97FYLJM');
+        $ids = array(Subjects::VIDEO, Subjects::VIDEO_SECOND);
         $videos = $this->youtube->getVideosInfo($ids);
 
         $this->assertIsArray($videos);
+        $this->assertCount(2, $videos);
 
         foreach ($videos as $video) {
             $this->assertContains($video->id, $ids);
@@ -63,17 +68,39 @@ class LiveApiTest extends TestCase
         }
     }
 
+    /**
+     * A removed video yields a well-formed response with an empty items list,
+     * which decodeSingle() reports as false rather than throwing.
+     */
+    public function testAnUnavailableVideoReturnsFalse()
+    {
+        $this->assertFalse($this->youtube->getVideoInfo(Subjects::VIDEO_UNAVAILABLE));
+    }
+
     public function testAnInvalidKeyThrows()
     {
         $youtube = new Youtube(array('key' => 'nonsense'));
 
         $this->expectException('Exception');
-        $youtube->getVideoInfo('rie-hPVJ7Sw');
+        $youtube->getVideoInfo(Subjects::VIDEO);
+    }
+
+    public function testAnInvalidKeyReportsGooglesErrorCode()
+    {
+        $youtube = new Youtube(array('key' => 'nonsense'));
+
+        try {
+            $youtube->getVideoInfo(Subjects::VIDEO);
+            $this->fail('Expected an exception for an invalid API key.');
+        } catch (\Exception $e) {
+            $this->assertSame(400, $e->getCode());
+            $this->assertStringContainsString('Error 400', $e->getMessage());
+        }
     }
 
     public function testSearchReturnsResults()
     {
-        $results = $this->youtube->search('Android', 5);
+        $results = $this->youtube->search(Subjects::SEARCH_QUERY, 5);
 
         $this->assertIsArray($results);
         $this->assertNotEmpty($results);
@@ -84,7 +111,7 @@ class LiveApiTest extends TestCase
 
     public function testSearchVideosReturnsOnlyVideos()
     {
-        $results = $this->youtube->searchVideos('Android', 5);
+        $results = $this->youtube->searchVideos(Subjects::SEARCH_QUERY, 5);
 
         $this->assertNotEmpty($results);
         foreach ($results as $result) {
@@ -92,10 +119,24 @@ class LiveApiTest extends TestCase
         }
     }
 
+    public function testSearchChannelVideosStaysWithinTheChannel()
+    {
+        $results = $this->youtube->searchChannelVideos(
+            Subjects::SEARCH_QUERY,
+            Subjects::CHANNEL_SECOND,
+            5
+        );
+
+        $this->assertNotEmpty($results);
+        foreach ($results as $result) {
+            $this->assertSame(Subjects::CHANNEL_SECOND, $result->snippet->channelId);
+        }
+    }
+
     public function testSearchAdvancedReturnsPageInfo()
     {
         $response = $this->youtube->searchAdvanced(array(
-            'q'          => 'Android',
+            'q'          => Subjects::SEARCH_QUERY,
             'type'       => 'video',
             'part'       => 'id, snippet',
             'maxResults' => 5,
@@ -108,8 +149,9 @@ class LiveApiTest extends TestCase
     public function testPaginateResultsWalksToTheNextPage()
     {
         $params = array(
-            'q'          => 'Android',
+            'q'          => Subjects::SEARCH_QUERY,
             'type'       => 'video',
+            'channelId'  => Subjects::CHANNEL_SECOND,
             'part'       => 'id, snippet',
             'maxResults' => 5,
         );
@@ -121,15 +163,28 @@ class LiveApiTest extends TestCase
         $second = $this->youtube->paginateResults($params, $token);
         $this->assertSame('youtube#searchListResponse', $second['info']['kind']);
         $this->assertNotEmpty($second['results']);
+
+        // The second page must be different content, and must know its way back.
+        $this->assertNotEmpty($second['info']['prevPageToken']);
+        $this->assertNotSame(
+            $first['results'][0]->id->videoId,
+            $second['results'][0]->id->videoId
+        );
+    }
+
+    public function testSearchWithNoMatchesReturnsFalse()
+    {
+        $results = $this->youtube->searchVideos(Subjects::SEARCH_QUERY_NO_RESULTS, 5);
+
+        $this->assertFalse($results);
     }
 
     public function testGetChannelByIdReturnsTheExpectedShape()
     {
-        $channelId = 'UCK8sQmJBp8GCxrOtXWBpyEA';
-        $channel = $this->youtube->getChannelById($channelId);
+        $channel = $this->youtube->getChannelById(Subjects::CHANNEL);
 
         $this->assertSame('youtube#channel', $channel->kind);
-        $this->assertSame($channelId, $channel->id);
+        $this->assertSame(Subjects::CHANNEL, $channel->id);
         $this->assertObjectHasProperty('snippet', $channel);
         $this->assertObjectHasProperty('contentDetails', $channel);
         $this->assertObjectHasProperty('statistics', $channel);
@@ -137,7 +192,7 @@ class LiveApiTest extends TestCase
 
     public function testGetChannelsByIdReturnsEachChannel()
     {
-        $ids = array('UCk1SpWNzOs4MYmr0uICEntg', 'UCK8sQmJBp8GCxrOtXWBpyEA');
+        $ids = array(Subjects::CHANNEL, Subjects::CHANNEL_SECOND);
         $channels = $this->youtube->getChannelsById($ids);
 
         $this->assertCount(2, $channels);
@@ -149,45 +204,56 @@ class LiveApiTest extends TestCase
     public function testGetChannelFromUrlWithAChannelPath()
     {
         $channel = $this->youtube->getChannelFromURL(
-            'https://www.youtube.com/channel/UCK8sQmJBp8GCxrOtXWBpyEA'
+            'https://www.youtube.com/channel/' . Subjects::CHANNEL
         );
 
-        $this->assertSame('UCK8sQmJBp8GCxrOtXWBpyEA', $channel->id);
+        $this->assertSame(Subjects::CHANNEL, $channel->id);
+    }
+
+    /**
+     * The uploads playlist is derived from the channel id and exists for as
+     * long as the channel does, which is what makes it a safe live subject.
+     */
+    public function testTheUploadsPlaylistMatchesTheChannel()
+    {
+        $channel = $this->youtube->getChannelById(Subjects::CHANNEL_SECOND);
+
+        $this->assertSame(
+            Subjects::PLAYLIST,
+            $channel->contentDetails->relatedPlaylists->uploads
+        );
     }
 
     public function testGetPlaylistsByChannelId()
     {
-        $playlists = $this->youtube->getPlaylistsByChannelId('UCK8sQmJBp8GCxrOtXWBpyEA');
+        $playlists = $this->youtube->getPlaylistsByChannelId(
+            Subjects::CHANNEL_SECOND,
+            array('maxResults' => 3)
+        );
 
         $this->assertNotEmpty($playlists);
         $this->assertSame('youtube#playlist', $playlists[0]->kind);
+        $this->assertSame(Subjects::CHANNEL_SECOND, $playlists[0]->snippet->channelId);
     }
 
     public function testGetPlaylistItemsByPlaylistId()
     {
-        $playlists = $this->youtube->getPlaylistsByChannelId('UCK8sQmJBp8GCxrOtXWBpyEA');
-        $this->assertNotEmpty($playlists);
-
-        $items = $this->youtube->getPlaylistItemsByPlaylistId($playlists[0]->id);
+        $items = $this->youtube->getPlaylistItemsByPlaylistId(Subjects::PLAYLIST, 3);
 
         $this->assertNotEmpty($items);
         $this->assertSame('youtube#playlistItem', $items[0]->kind);
+        $this->assertSame(Subjects::PLAYLIST, $items[0]->snippet->playlistId);
     }
 
     public function testGetActivitiesByChannelId()
     {
-        $activities = $this->youtube->getActivitiesByChannelId('UCK8sQmJBp8GCxrOtXWBpyEA');
+        $activities = $this->youtube->getActivitiesByChannelId(
+            Subjects::CHANNEL_SECOND,
+            array('maxResults' => 3)
+        );
 
         $this->assertNotEmpty($activities);
         $this->assertSame('youtube#activity', $activities[0]->kind);
-    }
-
-    /**
-     * A deleted or otherwise unavailable video yields an empty items list,
-     * which decodeSingle() reports as false rather than throwing.
-     */
-    public function testAnUnavailableVideoReturnsFalse()
-    {
-        $this->assertFalse($this->youtube->getVideoInfo('Utn7NBtbHL4'));
+        $this->assertSame(Subjects::CHANNEL_SECOND, $activities[0]->snippet->channelId);
     }
 }

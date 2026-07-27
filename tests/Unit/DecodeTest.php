@@ -25,12 +25,12 @@ class DecodeTest extends TestCase
     public static function undecodableBodyProvider()
     {
         return array(
-            'empty body'    => array(''),
-            'html error'    => array('<html><body>503 Service Unavailable</body></html>'),
-            'truncated'     => array('{"items":['),
-            'json null'     => array('null'),
-            'json array'    => array('[1,2]'),
-            'json scalar'   => array('"a string"'),
+            'empty body'  => array(''),
+            'html error'  => array('<html><body>503 Service Unavailable</body></html>'),
+            'truncated'   => array('{"items":['),
+            'json null'   => array('null'),
+            'json array'  => array('[1,2]'),
+            'json scalar' => array('"a string"'),
         );
     }
 
@@ -54,50 +54,80 @@ class DecodeTest extends TestCase
         $this->assertFalse($this->youtube->decodeList($body));
     }
 
+    /**
+     * A well-formed response that simply matched nothing. Distinct from a
+     * malformed body: this is what a deleted video or an unmatched search
+     * actually returns.
+     */
     public function testDecodeSingleReturnsFalseWhenItemsIsEmpty()
+    {
+        $body = $this->fixture('videos.empty');
+
+        $this->assertFalse($this->youtube->decodeSingle($body));
+    }
+
+    public function testDecodeListReturnsFalseWhenItemsIsEmpty()
     {
         $body = $this->fixture('search.empty');
 
-        $this->assertFalse($this->youtube->decodeSingle($body));
+        $this->assertFalse($this->youtube->decodeList($body));
     }
 
     public function testDecodeSingleReturnsTheFirstItem()
     {
         $body = $this->fixture('videos.multiple');
+        $raw = $this->fixtureData('videos.multiple');
+
         $item = $this->youtube->decodeSingle($body);
 
-        $this->assertSame('rie-hPVJ7Sw', $item->id);
+        $this->assertSame($raw->items[0]->id, $item->id);
     }
 
     public function testDecodeListReturnsEveryItem()
     {
         $body = $this->fixture('videos.multiple');
+        $raw = $this->fixtureData('videos.multiple');
+
         $items = $this->youtube->decodeList($body);
 
         $this->assertIsArray($items);
-        $this->assertCount(2, $items);
-        $this->assertSame('lRRk97FYLJM', $items[1]->id);
+        $this->assertCount(count($raw->items), $items);
+        $this->assertSame($raw->items[count($raw->items) - 1]->id, $items[count($items) - 1]->id);
     }
 
     public function testDecodeListPopulatesPageInfo()
     {
         $body = $this->fixture('search');
-        $this->youtube->decodeList($body);
+        $raw = $this->fixtureData('search');
 
-        $this->assertSame('youtube#searchListResponse', $this->youtube->page_info['kind']);
-        $this->assertSame('etag-search', $this->youtube->page_info['etag']);
-        $this->assertSame(3, $this->youtube->page_info['resultsPerPage']);
-        $this->assertSame(1000000, $this->youtube->page_info['totalResults']);
-        $this->assertSame('CAUQAA', $this->youtube->page_info['nextPageToken']);
-        $this->assertNull($this->youtube->page_info['prevPageToken']);
+        $this->youtube->decodeList($body);
+        $info = $this->youtube->page_info;
+
+        $this->assertSame($raw->kind, $info['kind']);
+        $this->assertSame($raw->etag, $info['etag']);
+        $this->assertSame($raw->pageInfo->resultsPerPage, $info['resultsPerPage']);
+        $this->assertSame($raw->pageInfo->totalResults, $info['totalResults']);
+        $this->assertSame($raw->nextPageToken, $info['nextPageToken']);
     }
 
-    public function testDecodeListReadsPrevPageToken()
+    public function testDecodeListReadsBothPageTokens()
     {
         $body = $this->fixture('search.page2');
+        $raw = $this->fixtureData('search.page2');
+
+        $this->youtube->decodeList($body);
+        $info = $this->youtube->page_info;
+
+        $this->assertSame($raw->prevPageToken, $info['prevPageToken']);
+        $this->assertSame($raw->nextPageToken, $info['nextPageToken']);
+    }
+
+    public function testPageTokensAreNullWhenAbsent()
+    {
+        $body = $this->fixture('channels.single');
         $this->youtube->decodeList($body);
 
-        $this->assertSame('CAUQAQ', $this->youtube->page_info['prevPageToken']);
+        $this->assertNull($this->youtube->page_info['prevPageToken']);
         $this->assertNull($this->youtube->page_info['nextPageToken']);
     }
 
@@ -109,7 +139,7 @@ class DecodeTest extends TestCase
     {
         $good = $this->fixture('search');
         $this->youtube->decodeList($good);
-        $this->assertSame('CAUQAA', $this->youtube->page_info['nextPageToken']);
+        $this->assertNotNull($this->youtube->page_info['nextPageToken']);
 
         $bad = '<html>503</html>';
         $this->youtube->decodeList($bad);
@@ -121,32 +151,35 @@ class DecodeTest extends TestCase
 
     public function testDecodeSingleThrowsOnAnApiError()
     {
-        $body = $this->fixture('error.quota');
+        $body = $this->fixture('error.badkey');
+        $raw = $this->fixtureData('error.badkey');
 
         $this->expectException('Exception');
-        $this->expectExceptionCode(403);
+        $this->expectExceptionCode($raw->error->code);
         $this->youtube->decodeSingle($body);
     }
 
-    public function testApiErrorMessageIncludesCodeAndReason()
+    public function testApiErrorMessageCarriesCodeAndReason()
     {
         $body = $this->fixture('error.quota');
+        $raw = $this->fixtureData('error.quota');
 
         try {
             $this->youtube->decodeSingle($body);
             $this->fail('Expected an exception for an API error body.');
         } catch (\Exception $e) {
-            $this->assertStringContainsString('Error 403', $e->getMessage());
-            $this->assertStringContainsString('quotaExceeded', $e->getMessage());
+            $this->assertStringContainsString('Error ' . $raw->error->code, $e->getMessage());
+            $this->assertStringContainsString($raw->error->errors[0]->reason, $e->getMessage());
+            $this->assertSame($raw->error->code, $e->getCode());
         }
     }
 
     public function testDecodeListThrowsOnAnApiError()
     {
-        $body = $this->fixture('error.badkey');
+        $body = $this->fixture('error.quota');
 
         $this->expectException('Exception');
-        $this->expectExceptionCode(400);
+        $this->expectExceptionCode(403);
         $this->youtube->decodeList($body);
     }
 }

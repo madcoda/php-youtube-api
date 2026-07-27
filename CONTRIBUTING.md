@@ -58,10 +58,42 @@ through 8.5, and CI runs all eleven versions. Practical consequences:
 If a change genuinely needs newer syntax, say so in the pull request. It is a
 reasonable thing to want, but it makes the change 2.0 material rather than 1.x.
 
-## Adding a fixture
+## Fixtures
 
-Fixtures are the raw response body, exactly as the API returns it. Add the JSON file to
-`tests/fixtures/` and load it with `$this->fixture('name')` (no `.json` suffix).
+`tests/fixtures/*.json` are real API responses, captured from live calls. Do not
+hand-write them. Re-record with:
+
+```sh
+YOUTUBE_API_KEY=your-key php tests/tools/record-fixtures.php
+```
+
+That costs roughly 310 quota units, almost all of it the three search calls at 100 each.
+
+Load one in a test with `$this->fixture('name')` for the raw body, or
+`$this->fixtureData('name')` for the decoded object.
+
+**Assert Google's values against the fixture, not against literals.** Anything that
+originates at the API — ids, page tokens, item counts — should be compared with
+`$this->fixtureData(...)` so that a re-record does not break the suite. The assertion
+stays meaningful: comparing against `$raw->items[0]->id` still catches `decodeSingle()`
+returning the wrong item. Values the *library* produces — endpoint URLs, parameter
+names, the injected key — stay as literals, because those are the thing under test.
+
+`error.quota.json` is the one exception and is hand-written: deliberately exhausting the
+daily quota to record it is not something the recorder should do.
+
+`FixtureDriftTest` (in the `live` group) compares every fixture's structure against a
+fresh live response and fails when the API has stopped returning a field the fixture
+records. That is the signal to re-record. New fields appearing live are reported as a
+note rather than a failure, since they break nothing.
+
+## Test subjects
+
+Real videos, channels and playlists live in `tests/Subjects.php`, not scattered through
+the tests. When Google removes one, that is the only file to edit. Pick replacements for
+durability: institutional channels over personal ones, official uploads over copies, and
+the uploads playlist (`UU...`) over a curated playlist, since the uploads playlist cannot
+be deleted while the channel exists.
 
 ## Reporting a bug
 
