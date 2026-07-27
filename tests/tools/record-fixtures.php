@@ -91,6 +91,14 @@ function record($name, callable $call)
         return;
     }
 
+    // search.list echoes back the region the request appeared to come from,
+    // which would commit whoever ran this recorder's approximate location into
+    // a public repository. Nothing asserts on it, and the drift test compares
+    // field names rather than values, so pinning it loses nothing.
+    if (isset($decoded->regionCode)) {
+        $decoded->regionCode = 'US';
+    }
+
     // Pretty-printed so that a re-record produces a readable diff. This is the
     // same JSON, just reformatted; the library only ever json_decode()s it.
     $json = json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

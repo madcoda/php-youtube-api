@@ -1,5 +1,4 @@
-### /Users/jason/.gitignore-boilerplates/Global/OSX.gitignore
-
+# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
