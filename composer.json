@@ -26,8 +26,7 @@
     "autoload": {
         "psr-4": {
             "Madcoda\\Youtube\\": "src"
-        },
-        "classmap": ["src/compat.php"]
+        }
     },
     "autoload-dev": {
         "psr-4": {

@@ -98,6 +98,11 @@ class Youtube
         }
 
         if ($sslPath !== null) {
+            if (!file_exists($sslPath)) {
+                throw new \InvalidArgumentException(
+                    'The supplied SSL certificate path does not exist: ' . $sslPath
+                );
+            }
             $this->sslPath = $sslPath;
         }
     }
@@ -311,7 +316,7 @@ class Youtube
             'forUsername' => $username,
             'part' => 'id,snippet,contentDetails,statistics'
         );
-        if ($optionalParams) {
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -331,7 +336,7 @@ class Youtube
             'id' => $id,
             'part' => 'id,snippet,contentDetails,statistics'
         );
-        if ($optionalParams) {
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -350,7 +355,7 @@ class Youtube
             'id' => implode(',', $ids),
             'part' => 'id,snippet,contentDetails,statistics'
         );
-        if($optionalParams){
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -370,7 +375,7 @@ class Youtube
             'channelId' => $channelId,
             'part' => 'id, snippet, status'
         );
-        if ($optionalParams) {
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -452,7 +457,7 @@ class Youtube
             'channelId' => $channelId,
             'part' => 'id, snippet, contentDetails'
         );
-        if ($optionalParams) {
+        if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
         $apiData = $this->api_get($API_URL, $params);
@@ -471,16 +476,28 @@ class Youtube
     public static function parseVIdFromURL($youtube_url)
     {
         $videoId = null;
-        if (strpos($youtube_url, 'youtube.com')) {
-            if (strpos($youtube_url, 'embed')) {
-                $path = static::_parse_url_path($youtube_url);
+        // parse_url() only recognises a host when a scheme is present; without
+        // one the whole string is treated as the path, so the fixed substr()
+        // offsets below would slice the host instead of the id. Normalise first
+        // so "youtu.be/xxxx" behaves like "https://youtu.be/xxxx".
+        $url = $youtube_url;
+        if (strpos($url, '//') === false) {
+            $url = 'https://' . ltrim($url, '/');
+        }
+
+        // strpos() returns 0 when the URL *starts* with the needle, which is
+        // falsy. Comparing against false is required, otherwise scheme-less
+        // URLs such as "youtube.com/watch?v=..." are rejected as invalid.
+        if (strpos($url, 'youtube.com') !== false) {
+            if (strpos($url, 'embed') !== false) {
+                $path = static::_parse_url_path($url);
                 $videoId = substr($path, 7);
             }
-            if ($params = static::_parse_url_query($youtube_url)) {
+            if ($params = static::_parse_url_query($url)) {
                 $videoId = isset($params['v']) ? $params['v'] : null;
             }
-        } elseif (strpos($youtube_url, 'youtu.be')) {
-            $path = static::_parse_url_path($youtube_url);
+        } elseif (strpos($url, 'youtu.be') !== false) {
+            $path = static::_parse_url_path($url);
             $videoId = substr($path, 1);
         }
 
@@ -554,7 +571,10 @@ class Youtube
             }
             throw new \Exception($msg, $resObj->error->code);
         } else {
-            if(!property_exists($resObj, 'items')){
+            // A non-JSON body (an HTML error page, an empty response, a truncated
+            // read) decodes to null. Passing that to property_exists() is a fatal
+            // TypeError on PHP 8, where PHP 7 only raised a warning and carried on.
+            if (!is_object($resObj) || !property_exists($resObj, 'items')) {
                 return false;
             }
             $itemsArray = $resObj->items;
@@ -584,11 +604,13 @@ class Youtube
             }
             throw new \Exception($msg, $resObj->error->code);
         } else {
+            // Reset page_info on every call so a failed decode cannot leave the
+            // caller reading stale pagination data from an earlier request.
             $this->page_info = array(
-                'resultsPerPage' => $resObj->pageInfo->resultsPerPage,
+                'resultsPerPage' => isset($resObj->pageInfo->resultsPerPage) ? $resObj->pageInfo->resultsPerPage : null,
                 'totalResults'   => isset($resObj->pageInfo->totalResults) ? $resObj->pageInfo->totalResults : null,
-                'kind'           => $resObj->kind,
-                'etag'           => $resObj->etag,
+                'kind'           => isset($resObj->kind) ? $resObj->kind : null,
+                'etag'           => isset($resObj->etag) ? $resObj->etag : null,
                 'prevPageToken'     => null,
                 'nextPageToken'     => null
             );
@@ -599,6 +621,9 @@ class Youtube
                 $this->page_info['nextPageToken'] = $resObj->nextPageToken;
             }
 
+            if (!is_object($resObj) || !isset($resObj->items)) {
+                return false;
+            }
             $itemsArray = $resObj->items;
             if (!is_array($itemsArray) || count($itemsArray) == 0) {
                 return false;
@@ -627,8 +652,15 @@ class Youtube
         if ($this->sslPath !== null) {
             curl_setopt($tuCurl, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($tuCurl, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($tuCurl, CURLOPT_CAINFO, __DIR__ . '/cert/cacert.pem');
-            curl_setopt($tuCurl, CURLOPT_CAPATH, __DIR__ . '/cert/cacert.pem');
+            // The supplied path was previously ignored: both options were
+            // hardcoded to the CA bundle vendored in src/cert, silently
+            // replacing the system trust store with a 2013-vintage snapshot.
+            // CAPATH also expects a directory, not a file.
+            if (is_dir($this->sslPath)) {
+                curl_setopt($tuCurl, CURLOPT_CAPATH, $this->sslPath);
+            } else {
+                curl_setopt($tuCurl, CURLOPT_CAINFO, $this->sslPath);
+            }
         }
         curl_setopt($tuCurl, CURLOPT_URL, $url . (strpos($url, '?') === false ? '?' : '') . http_build_query($params));
         if ($this->referer !== null) {
@@ -651,7 +683,11 @@ class Youtube
      */
     public static function _parse_url_path($url)
     {
-        return parse_url($url, PHP_URL_PATH);
+        $path = parse_url($url, PHP_URL_PATH);
+
+        // parse_url() returns null for a URL with no path at all. Returning a
+        // string keeps substr() off the PHP 8.1+ "null to non-nullable" path.
+        return $path === null || $path === false ? '' : $path;
     }
 
 
@@ -666,6 +702,13 @@ class Youtube
         $queryString = parse_url($url, PHP_URL_QUERY);
 
         $params = array();
+
+        // parse_url() returns null when the URL carries no query string, and
+        // passing null to parse_str() is deprecated on PHP 8.1+. This fires for
+        // every URL without a query, including all /embed/ URLs.
+        if ($queryString === null || $queryString === false) {
+            $queryString = '';
+        }
 
         parse_str($queryString, $params);
 
