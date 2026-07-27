@@ -508,7 +508,8 @@ class Youtube
 
     /**
      * Parse a youtube URL to get the youtube Vid.
-     * Support both full URL (www.youtube.com) and short URL (youtu.be)
+     * Supports the full URL (www.youtube.com/watch?v=xxxx), the short URL
+     * (youtu.be/xxxx), and the /embed/xxxx and /shorts/xxxx path forms.
      *
      * @param  string $youtube_url
      * @throws \Exception
@@ -530,12 +531,27 @@ class Youtube
         // falsy. Comparing against false is required, otherwise scheme-less
         // URLs such as "youtube.com/watch?v=..." are rejected as invalid.
         if (strpos($url, 'youtube.com') !== false) {
-            if (strpos($url, 'embed') !== false) {
-                $path = static::_parse_url_path($url);
-                $videoId = substr($path, 7);
+            // These forms carry the id in the path rather than in a ?v= param.
+            // Match on the path so that "embed"/"shorts" appearing anywhere
+            // else in the URL (a query value, or the id itself) is not
+            // mistaken for a path of that kind.
+            $path = static::_parse_url_path($url);
+            foreach (array('/embed/', '/shorts/') as $prefix) {
+                if (strpos($path, $prefix) === 0) {
+                    // Only the first segment is the id; anything after it is a
+                    // trailing slash or extra path we should not swallow.
+                    $segments = explode('/', substr($path, strlen($prefix)));
+                    $videoId = $segments[0];
+                    break;
+                }
             }
-            if ($params = static::_parse_url_query($url)) {
-                $videoId = isset($params['v']) ? $params['v'] : null;
+
+            // A ?v= param wins when present, but a query string on a path-style
+            // URL (e.g. "/embed/xxxx?start=30") must not clobber the id found
+            // above -- assigning null there made every such URL throw.
+            $params = static::_parse_url_query($url);
+            if (isset($params['v'])) {
+                $videoId = $params['v'];
             }
         } elseif (strpos($url, 'youtu.be') !== false) {
             $path = static::_parse_url_path($url);
