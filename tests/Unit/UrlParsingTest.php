@@ -41,10 +41,32 @@ class UrlParsingTest extends TestCase
             'embed with query'      => array('https://www.youtube.com/embed/_vA5PvDfNTs?start=30', '_vA5PvDfNTs'),
             'embed trailing slash'  => array('https://www.youtube.com/embed/_vA5PvDfNTs/', '_vA5PvDfNTs'),
 
-            // "embed" and "shorts" only count as a path prefix, never as a
-            // substring of the id or of a query value.
+            // Live streams and the VODs they leave behind, which use the same
+            // first-path-segment layout as /embed/ and /shorts/.
+            'live'                  => array('https://www.youtube.com/live/aG9dLtqbFn8', 'aG9dLtqbFn8'),
+            'live without www'      => array('https://youtube.com/live/aG9dLtqbFn8', 'aG9dLtqbFn8'),
+            'scheme-less live'      => array('youtube.com/live/aG9dLtqbFn8', 'aG9dLtqbFn8'),
+            'live with query'       => array('https://www.youtube.com/live/aG9dLtqbFn8?feature=share', 'aG9dLtqbFn8'),
+            'live trailing slash'   => array('https://www.youtube.com/live/aG9dLtqbFn8/', 'aG9dLtqbFn8'),
+
+            // The legacy /v/ embed URL, still present in a lot of old content.
+            'legacy embed'          => array('https://www.youtube.com/v/C0DPdy98e4c', 'C0DPdy98e4c'),
+            'legacy without www'    => array('https://youtube.com/v/C0DPdy98e4c', 'C0DPdy98e4c'),
+            'scheme-less legacy'    => array('youtube.com/v/C0DPdy98e4c', 'C0DPdy98e4c'),
+            'legacy with query'     => array('https://www.youtube.com/v/C0DPdy98e4c?version=3', 'C0DPdy98e4c'),
+            'legacy trailing slash' => array('https://www.youtube.com/v/C0DPdy98e4c/', 'C0DPdy98e4c'),
+
+            // Regression: the youtu.be branch took the whole path, so a
+            // trailing slash came back as part of the id ("1FJHYqE0RDg/").
+            'short trailing slash'  => array('https://youtu.be/1FJHYqE0RDg/', '1FJHYqE0RDg'),
+            'scheme-less short /'   => array('youtu.be/1FJHYqE0RDg/', '1FJHYqE0RDg'),
+
+            // "embed", "shorts", "live" and "v" only count as a path prefix,
+            // never as a substring of the id or of a query value.
             'id containing embed'   => array('https://www.youtube.com/watch?v=embedFHYqE0R', 'embedFHYqE0R'),
             'shorts in query value' => array('https://www.youtube.com/watch?v=1FJHYqE0RDg&list=shorts', '1FJHYqE0RDg'),
+            'id containing live'    => array('https://www.youtube.com/watch?v=liveHYqE0RDg', 'liveHYqE0RDg'),
+            'live in query value'   => array('https://www.youtube.com/watch?v=1FJHYqE0RDg&list=live', '1FJHYqE0RDg'),
         );
     }
 
@@ -67,6 +89,8 @@ class UrlParsingTest extends TestCase
             'v param absent' => array('https://www.youtube.com/watch?t=42s'),
             'bare shorts'    => array('https://www.youtube.com/shorts/'),
             'bare embed'     => array('https://www.youtube.com/embed/'),
+            'bare live'      => array('https://www.youtube.com/live/'),
+            'bare legacy'    => array('https://www.youtube.com/v/'),
         );
     }
 
