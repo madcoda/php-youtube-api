@@ -16,9 +16,9 @@ class YoutubeServiceProviderLaravel5 extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([
+        $this->publishes(array(
             __DIR__.'/config/youtube.php' => config_path('youtube.php'),
-        ]);
+        ));
     }
 
     /**
@@ -41,6 +41,6 @@ class YoutubeServiceProviderLaravel5 extends ServiceProvider
      */
     public function provides()
     {
-        return ['Madcoda\Youtube\Youtube'];
+        return array('Madcoda\Youtube\Youtube');
     }
 }

@@ -12,7 +12,6 @@ use Madcoda\Youtube\Http\HttpClientInterface;
  */
 class Youtube
 {
-
     /*
      * some constants for convenience
      */
@@ -177,7 +176,7 @@ class Youtube
 
     /**
      * @param $vId
-     * @return \StdClass
+     * @return \StdClass|false the video resource, or false if not found
      * @throws \Exception
      */
     public function getVideoInfo($vId)
@@ -195,7 +194,7 @@ class Youtube
 
     /**
      * @param $vIds
-     * @return \StdClass
+     * @return array|false     list of video resources, or false if none
      * @throws \Exception
      */
     public function getVideosInfo($vIds)
@@ -218,7 +217,7 @@ class Youtube
      *
      * @param $q
      * @param int $maxResults
-     * @return array
+     * @return array|false
      */
     public function search($q, $maxResults = 10)
     {
@@ -237,7 +236,7 @@ class Youtube
      * @param  string $q Query
      * @param  integer $maxResults number of results to return
      * @param  string $order Order by
-     * @return \StdClass  API results
+     * @return array|false     API results, or false if none
      */
     public function searchVideos($q, $maxResults = 10, $order = null)
     {
@@ -262,7 +261,7 @@ class Youtube
      * @param  string $channelId
      * @param  integer $maxResults
      * @param  string $order
-     * @return object
+     * @return array|false
      */
     public function searchChannelVideos($q, $channelId, $maxResults = 10, $order = null)
     {
@@ -306,7 +305,7 @@ class Youtube
      *
      * @param $params
      * @param $pageInfo
-     * @return array
+     * @return array|false     items, or array{results: array|false, info: array} when $pageInfo
      * @throws \Exception
      */
     public function searchAdvanced($params, $pageInfo = false)
@@ -335,7 +334,7 @@ class Youtube
      *
      * @param $params
      * @param $token
-     * @return array
+     * @return array           array{results: array|false, info: array}
      */
     public function paginateResults($params, $token = null)
     {
@@ -348,7 +347,7 @@ class Youtube
 
     /**
      * @param $username
-     * @return \StdClass
+     * @return \StdClass|false the channel resource, or false if not found
      * @throws \Exception
      */
     public function getChannelByName($username, $optionalParams = false)
@@ -368,7 +367,7 @@ class Youtube
 
     /**
      * @param $id
-     * @return \StdClass
+     * @return \StdClass|false the channel resource, or false if not found
      * @throws \Exception
      */
     public function getChannelById($id, $optionalParams = false)
@@ -387,7 +386,7 @@ class Youtube
 
     /**
      * @param array $ids
-     * @return \StdClass
+     * @return array|false     list of channel resources, or false if none
      * @throws \Exception
      */
     public function getChannelsById($ids = array(), $optionalParams = false)
@@ -407,7 +406,7 @@ class Youtube
     /**
      * @param $channelId
      * @param array $optionalParams
-     * @return array
+     * @return array|false
      * @throws \Exception
      */
     public function getPlaylistsByChannelId($channelId, $optionalParams = array())
@@ -427,7 +426,7 @@ class Youtube
 
     /**
      * @param $id
-     * @return \StdClass
+     * @return \StdClass|false the playlist resource, or false if not found
      * @throws \Exception
      */
     public function getPlaylistById($id)
@@ -444,7 +443,7 @@ class Youtube
 
     /**
      * @param $playlistId
-     * @return array
+     * @return array|false
      * @throws \Exception
      */
     public function getPlaylistItemsByPlaylistId($playlistId, $maxResults = 50)
@@ -461,7 +460,7 @@ class Youtube
     /**
      * @param $params
      * @param bool|false $pageInfo
-     * @return array
+     * @return array|false     items, or array{results: array|false, info: array} when $pageInfo
      * @throws \Exception
      */
     public function getPlaylistItemsByPlaylistIdAdvanced($params, $pageInfo = false)
@@ -486,7 +485,7 @@ class Youtube
 
     /**
      * @param $channelId
-     * @return array
+     * @return array|false
      * @throws \Exception
      */
     public function getActivitiesByChannelId($channelId, $optionalParams = false)
@@ -556,7 +555,7 @@ class Youtube
      *
      * @param  string $youtube_url
      * @throws \Exception
-     * @return object Channel object
+     * @return \StdClass|false Channel object, or false if not found
      */
     public function getChannelFromURL($youtube_url)
     {
@@ -601,7 +600,7 @@ class Youtube
      *
      * @param  string $apiData the api response from youtube
      * @throws \Exception
-     * @return \StdClass  an Youtube resource object
+     * @return \StdClass|false a Youtube resource object, or false if absent
      */
     public function decodeSingle(&$apiData)
     {
@@ -634,7 +633,7 @@ class Youtube
      *
      * @param  string $apiData response string from youtube
      * @throws \Exception
-     * @return array Array of StdClass objects
+     * @return array|false      Array of StdClass objects, or false if empty
      */
     public function decodeList(&$apiData)
     {

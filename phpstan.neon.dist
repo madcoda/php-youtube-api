@@ -1,0 +1,33 @@
+parameters:
+    level: 5
+
+    # Docblocks describe the intended call, not what a caller actually passes.
+    # This library is called from untyped code, and the runtime is_array()
+    # guards it keeps are exactly what stops a bad argument becoming a fatal
+    # TypeError on PHP 8. Treating the docblock as proof would flag those
+    # guards as dead code and invite their removal.
+    treatPhpDocTypesAsCertain: false
+
+    # src only. The polyfills base test case is resolved by a runtime class
+    # alias chosen from the installed PHPUnit version, so static analysis
+    # cannot see any inherited assertion method and reports every one of them
+    # as undefined. The test suite is verified by running it on all eleven
+    # supported PHP versions instead.
+    paths:
+        - src
+
+    # Analyse across the supported range so code that only works on modern PHP
+    # is caught before it ships. PHPStan will not accept a minimum below 70100,
+    # so PHP 7.0 itself is covered by running the real test suite on 7.0 in CI
+    # rather than by static analysis.
+    phpVersion:
+        min: 70100
+        max: 80500
+
+    # The Laravel service providers extend framework classes that are not a
+    # dependency of this library, so they cannot be resolved during analysis.
+    excludePaths:
+        analyse:
+            - src/YoutubeServiceProviderLaravel4.php
+            - src/YoutubeServiceProviderLaravel5.php
+            - src/Facades/Youtube.php

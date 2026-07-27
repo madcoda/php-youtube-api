@@ -1,0 +1,125 @@
+name: Tests
+
+on:
+  push:
+    branches: [master, '1.x']
+  pull_request:
+  # Google changes the Data API without warning, so run the live suite on a
+  # schedule to catch response-shape drift rather than finding out from an issue.
+  schedule:
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
+        os: [ubuntu-22.04]
+        include:
+          # Composer 2.3 dropped support for PHP below 7.2.5, so the oldest two
+          # versions need the 2.2 LTS line or `composer update` aborts outright.
+          - php: '7.0'
+            composer: 'composer:v2.2'
+          - php: '7.1'
+            composer: 'composer:v2.2'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, json
+          coverage: none
+          tools: ${{ matrix.composer || 'composer:v2' }}
+
+      - name: Install dependencies
+        # No lock file is committed, so each PHP version resolves the PHPUnit
+        # major that supports it: 6.5 on 7.0 up to 11.5 on 8.5.
+        run: composer update --no-interaction --no-progress --prefer-dist
+
+      - name: Show resolved toolchain
+        run: composer show | grep -E '^(phpunit/phpunit|yoast/phpunit-polyfills) '
+
+      - name: Run the offline test suite
+        run: vendor/bin/phpunit
+
+  lowest:
+    name: Lowest dependencies (PHP 7.0)
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.0'
+          extensions: curl, json
+          coverage: none
+          tools: composer:v2.2
+
+      - run: composer update --no-interaction --no-progress --prefer-dist --prefer-lowest
+
+      - run: vendor/bin/phpunit
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, json
+          coverage: xdebug
+          tools: composer:v2
+
+      - run: composer update --no-interaction --no-progress --prefer-dist
+
+      # Coverage is filtered on the command line rather than in phpunit.xml.dist,
+      # because the coverage element was renamed twice across the supported
+      # PHPUnit range and no single config form validates on all of them.
+      - name: Run tests with coverage
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml --coverage-filter=src
+
+      - uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  live:
+    name: Live API
+    runs-on: ubuntu-latest
+    # Needs a real key and burns quota, so never on pull requests from forks.
+    if: github.event_name == 'schedule' || github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, json
+          coverage: none
+          tools: composer:v2
+
+      - run: composer update --no-interaction --no-progress --prefer-dist
+
+      - name: Run the live API tests
+        # Skips cleanly rather than failing when the secret is absent, so forks
+        # and repositories without a key still get a green run.
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: vendor/bin/phpunit --group live

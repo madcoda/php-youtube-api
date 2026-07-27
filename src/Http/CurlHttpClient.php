@@ -69,7 +69,7 @@ class CurlHttpClient implements HttpClientInterface
             curl_setopt($tuCurl, CURLOPT_REFERER, $this->referer);
         }
 
-        curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($tuCurl, CURLOPT_RETURNTRANSFER, true);
 
         $tuData = curl_exec($tuCurl);
         if (curl_errno($tuCurl)) {

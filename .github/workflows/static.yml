@@ -1,0 +1,72 @@
+name: Static analysis
+
+on:
+  push:
+    branches: [master, '1.x']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, json
+          coverage: none
+          # Installed as standalone tools rather than require-dev: both need a
+          # PHP far newer than this library's 7.0 floor, and adding them to
+          # composer.json would make `composer install` unsatisfiable there.
+          tools: composer:v2, phpstan
+
+      - run: composer update --no-interaction --no-progress --prefer-dist
+
+      # Analyses src across the whole supported PHP range via the phpVersion
+      # min/max setting in phpstan.neon.dist.
+      - run: phpstan analyse --no-progress --error-format=github
+
+  style:
+    name: Code style (PSR-12)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, json
+          coverage: none
+          tools: php-cs-fixer
+
+      - run: php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.dist.php
+
+  lint:
+    name: Lint on PHP ${{ matrix.php }}
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.0', '8.5']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: none
+
+      # A cheap guard against syntax that only parses on newer PHP slipping in,
+      # independent of whether the test suite happens to exercise that file.
+      - name: Check every file parses
+        run: find src tests -name '*.php' -print0 | xargs -0 -n1 php -l

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Madcoda\Youtube;
 
@@ -8,7 +8,6 @@ use Illuminate\Support\ServiceProvider;
 
 class YoutubeServiceProviderLaravel4 extends ServiceProvider
 {
-
     /**
      * Indicates if loading of the provider is deferred.
      *
