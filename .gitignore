@@ -16,3 +16,17 @@ Icon
 # Composer
 vendor
 local
+
+# A library must not commit its lock file, so that consumers resolve
+# dependencies against their own PHP version.
+composer.lock
+
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache/
+coverage.xml
+coverage/
+
+# PHP-CS-Fixer / PHPStan
+.php-cs-fixer.cache
+.phpstan.cache/
