@@ -314,6 +314,114 @@ class ApiSurfaceTest extends TestCase
         $this->assertSame(Subjects::CHANNEL_SECOND, $this->http->params()['channelId']);
     }
 
+    public function testGetPlaylistsByChannelIdMergesOptionalParams()
+    {
+        $this->respondWith('playlists');
+        $this->youtube->getPlaylistsByChannelId(
+            Subjects::CHANNEL_SECOND,
+            array('maxResults' => 3)
+        );
+
+        $params = $this->http->params();
+        $this->assertSame('https://www.googleapis.com/youtube/v3/playlists', $this->http->url());
+        $this->assertSame(Subjects::CHANNEL_SECOND, $params['channelId']);
+        $this->assertSame('id, snippet, status', $params['part']);
+        $this->assertSame(3, $params['maxResults']);
+    }
+
+    public function testGetPlaylistsByChannelIdIgnoresNonArrayOptionalParams()
+    {
+        $this->respondWith('playlists');
+        $playlists = $this->youtube->getPlaylistsByChannelId(Subjects::CHANNEL_SECOND, true);
+
+        $this->assertSame('youtube#playlist', $playlists[0]->kind);
+    }
+
+    public function testGetPlaylistsByChannelIdAdvancedReturnsAPlainListByDefault()
+    {
+        $this->respondWith('playlists');
+        $raw = $this->fixtureData('playlists');
+
+        $playlists = $this->youtube->getPlaylistsByChannelIdAdvanced(array(
+            'channelId' => Subjects::CHANNEL_SECOND,
+            'part' => 'id, snippet, status'
+        ));
+
+        $this->assertIsArray($playlists);
+        $this->assertArrayNotHasKey('results', $playlists);
+        $this->assertCount(count($raw->items), $playlists);
+        $this->assertSame($raw->items[0]->id, $playlists[0]->id);
+    }
+
+    public function testGetPlaylistsByChannelIdAdvancedCanReturnPageInfo()
+    {
+        $this->respondWith('playlists');
+        $raw = $this->fixtureData('playlists');
+
+        $response = $this->youtube->getPlaylistsByChannelIdAdvanced(
+            array('channelId' => Subjects::CHANNEL_SECOND),
+            true
+        );
+
+        $this->assertArrayHasKey('results', $response);
+        $this->assertArrayHasKey('info', $response);
+        $this->assertCount(count($raw->items), $response['results']);
+        $this->assertSame($raw->kind, $response['info']['kind']);
+        $this->assertSame($raw->pageInfo->totalResults, $response['info']['totalResults']);
+        $this->assertSame($raw->nextPageToken, $response['info']['nextPageToken']);
+    }
+
+    public function testGetPlaylistsByChannelIdAdvancedRequiresAChannelId()
+    {
+        $this->expectException('InvalidArgumentException');
+        $this->youtube->getPlaylistsByChannelIdAdvanced(array('part' => 'id, snippet'), true);
+    }
+
+    public function testGetPlaylistsByChannelIdAdvancedRejectsEmptyParams()
+    {
+        $this->expectException('InvalidArgumentException');
+        $this->youtube->getPlaylistsByChannelIdAdvanced(null, true);
+    }
+
+    /**
+     * The reason the Advanced method exists: a channel with more playlists than
+     * one page can hold was silently truncated, because the caller had no way to
+     * reach nextPageToken.
+     */
+    public function testChannelPlaylistsCanBeWalkedPageByPage()
+    {
+        $this->respondWith('playlists');
+        $this->respondWith('playlists.page2');
+        $page1Raw = $this->fixtureData('playlists');
+        $page2Raw = $this->fixtureData('playlists.page2');
+
+        $params = array(
+            'channelId' => Subjects::CHANNEL_SECOND,
+            'part' => 'id, snippet, status',
+            'maxResults' => 3
+        );
+
+        $page1 = $this->youtube->getPlaylistsByChannelIdAdvanced($params, true);
+        $this->assertArrayNotHasKey('pageToken', $this->http->params());
+        $this->assertNotNull($page1['info']['nextPageToken']);
+
+        $params['pageToken'] = $page1['info']['nextPageToken'];
+        $page2 = $this->youtube->getPlaylistsByChannelIdAdvanced($params, true);
+
+        $this->assertSame($page1Raw->nextPageToken, $this->http->params()['pageToken']);
+        $this->assertSame($page2Raw->prevPageToken, $page2['info']['prevPageToken']);
+        $this->assertSame(2, $this->http->callCount());
+
+        $ids = array();
+        foreach (array_merge($page1['results'], $page2['results']) as $playlist) {
+            $ids[] = $playlist->id;
+        }
+        $this->assertCount(
+            count($page1Raw->items) + count($page2Raw->items),
+            array_unique($ids)
+        );
+    }
+
     public function testGetPlaylistById()
     {
         $this->respondWith('playlists');

@@ -19,6 +19,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   trailing slash, and both work with or without `www` and with or without a
   scheme, exactly as `/embed/` and `/shorts/` already did. Requested in
   [#85](https://github.com/madcoda/php-youtube-api/issues/85).
+- `getPlaylistsByChannelIdAdvanced($params, $pageInfo = false)`, which takes raw
+  `playlists.list` parameters and can return the pagination envelope alongside
+  the results. `getPlaylistsByChannelId()` returned one page and gave the caller
+  no way to read `nextPageToken`, so a channel with more playlists than a single
+  page holds was silently truncated; passing a `pageToken` through `$params` and
+  reading the next one back from `info` now walks the whole channel.
+  `getPlaylistsByChannelId()` is unchanged for existing callers and is now a thin
+  wrapper over the new method, the same way `getPlaylistItemsByPlaylistId()`
+  wraps its own `...Advanced()` counterpart. Originally proposed in
+  [#71](https://github.com/madcoda/php-youtube-api/pull/71) by
+  [@tyteck](https://github.com/tyteck).
+
+### Changed
+
+- `getPlaylistsByChannelId()` now rejects a `null` channel id before making a
+  request, throwing `InvalidArgumentException` the way the other `...Advanced()`
+  methods already do for their required ids. Previously the `null` was passed
+  through as an empty `channelId` parameter and the request was sent anyway, so
+  the caller paid a quota unit to have the API reject it. Any other value,
+  including the empty string, reaches the API exactly as before. Callers that
+  catch `\Exception` are unaffected, since `InvalidArgumentException` extends it.
 
 ### Fixed
 

@@ -1,0 +1,150 @@
+{
+    "kind": "youtube#playlistListResponse",
+    "etag": "OpIHXfbAtEMf2MDI8C2rw9PCYA4",
+    "nextPageToken": "CAYQAA",
+    "prevPageToken": "CAMQAQ",
+    "pageInfo": {
+        "totalResults": 115,
+        "resultsPerPage": 3
+    },
+    "items": [
+        {
+            "kind": "youtube#playlist",
+            "etag": "Dhu7u3emwrJCqbcXsd9cXsS4EmE",
+            "id": "PL2aBZuCeDwlQ6QkWUpHkNy5N0z91wi4I_",
+            "snippet": {
+                "publishedAt": "2025-03-19T00:06:34.420014Z",
+                "channelId": "UCLA_DiR1FfKNvjuUpBHmylQ",
+                "title": "Popular NASA Videos",
+                "description": "",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/S9HdPi9Ikhk/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/S9HdPi9Ikhk/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/S9HdPi9Ikhk/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    },
+                    "standard": {
+                        "url": "https://i.ytimg.com/vi/S9HdPi9Ikhk/sddefault.jpg",
+                        "width": 640,
+                        "height": 480
+                    },
+                    "maxres": {
+                        "url": "https://i.ytimg.com/vi/S9HdPi9Ikhk/maxresdefault.jpg",
+                        "width": 1280,
+                        "height": 720
+                    }
+                },
+                "channelTitle": "NASA",
+                "localized": {
+                    "title": "Popular NASA Videos",
+                    "description": ""
+                }
+            },
+            "status": {
+                "privacyStatus": "public"
+            }
+        },
+        {
+            "kind": "youtube#playlist",
+            "etag": "uWl7HanaA4wCIUOsrm2RG119-xs",
+            "id": "PL2aBZuCeDwlTXR6kIe16j0h4lx--ZneRO",
+            "snippet": {
+                "publishedAt": "2024-09-11T20:26:48.646569Z",
+                "channelId": "UCLA_DiR1FfKNvjuUpBHmylQ",
+                "title": "Europa Clipper",
+                "description": "The Europa Clipper spacecraft will head to Jupiter’s ice-encased moon Europa, where a salty ocean beneath the frozen surface may hold conditions suitable for life. Europa Clipper won’t be landing; rather, after arriving at the Jupiter system in 2030, the spacecraft will orbit Jupiter for four years, performing 49 flybys of Europa and using its powerful suite of nine science instruments to investigate the moon’s potential as a habitable environment.",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/uUpEEU7pplg/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/uUpEEU7pplg/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/uUpEEU7pplg/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    },
+                    "standard": {
+                        "url": "https://i.ytimg.com/vi/uUpEEU7pplg/sddefault.jpg",
+                        "width": 640,
+                        "height": 480
+                    },
+                    "maxres": {
+                        "url": "https://i.ytimg.com/vi/uUpEEU7pplg/maxresdefault.jpg",
+                        "width": 1280,
+                        "height": 720
+                    }
+                },
+                "channelTitle": "NASA",
+                "localized": {
+                    "title": "Europa Clipper",
+                    "description": "The Europa Clipper spacecraft will head to Jupiter’s ice-encased moon Europa, where a salty ocean beneath the frozen surface may hold conditions suitable for life. Europa Clipper won’t be landing; rather, after arriving at the Jupiter system in 2030, the spacecraft will orbit Jupiter for four years, performing 49 flybys of Europa and using its powerful suite of nine science instruments to investigate the moon’s potential as a habitable environment."
+                }
+            },
+            "status": {
+                "privacyStatus": "public"
+            }
+        },
+        {
+            "kind": "youtube#playlist",
+            "etag": "NzC6JI7gUJ6Jnq1hlTT6Zz0qIGI",
+            "id": "PL2aBZuCeDwlQJBK8eRs-WevZqwK5Lb514",
+            "snippet": {
+                "publishedAt": "2024-06-04T19:13:34.567197Z",
+                "channelId": "UCLA_DiR1FfKNvjuUpBHmylQ",
+                "title": "NASA's Boeing Starliner Crew Flight Test",
+                "description": "The latest on Boeing's Starliner missions through NASA's Commercial Crew Program, launching astronauts from from Space Launch Complex-41 at Cape Canaveral Space Force Station in Florida to the International Space Station.",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/2INMWLsb19M/default.jpg",
+                        "width": 120,
+                        "height": 90
+                    },
+                    "medium": {
+                        "url": "https://i.ytimg.com/vi/2INMWLsb19M/mqdefault.jpg",
+                        "width": 320,
+                        "height": 180
+                    },
+                    "high": {
+                        "url": "https://i.ytimg.com/vi/2INMWLsb19M/hqdefault.jpg",
+                        "width": 480,
+                        "height": 360
+                    },
+                    "standard": {
+                        "url": "https://i.ytimg.com/vi/2INMWLsb19M/sddefault.jpg",
+                        "width": 640,
+                        "height": 480
+                    },
+                    "maxres": {
+                        "url": "https://i.ytimg.com/vi/2INMWLsb19M/maxresdefault.jpg",
+                        "width": 1280,
+                        "height": 720
+                    }
+                },
+                "channelTitle": "NASA",
+                "localized": {
+                    "title": "NASA's Boeing Starliner Crew Flight Test",
+                    "description": "The latest on Boeing's Starliner missions through NASA's Commercial Crew Program, launching astronauts from from Space Launch Complex-41 at Cape Canaveral Space Force Station in Florida to the International Space Station."
+                }
+            },
+            "status": {
+                "privacyStatus": "public"
+            }
+        }
+    ]
+}

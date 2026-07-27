@@ -411,7 +411,6 @@ class Youtube
      */
     public function getPlaylistsByChannelId($channelId, $optionalParams = array())
     {
-        $API_URL = $this->getApi('playlists.list');
         $params = array(
             'channelId' => $channelId,
             'part' => 'id, snippet, status'
@@ -419,8 +418,38 @@ class Youtube
         if (is_array($optionalParams) && $optionalParams) {
             $params = array_merge($params, $optionalParams);
         }
+        return $this->getPlaylistsByChannelIdAdvanced($params);
+    }
+
+
+    /**
+     * Generic playlists.list interface, use any parameters specified in
+     * the API reference. Pass a pageToken through $params and read the next
+     * one back from the returned info to walk a channel with more playlists
+     * than one page can hold.
+     *
+     * @param $params
+     * @param bool|false $pageInfo
+     * @return array|false     items, or array{results: array|false, info: array} when $pageInfo
+     * @throws \Exception
+     */
+    public function getPlaylistsByChannelIdAdvanced($params, $pageInfo = false)
+    {
+        $API_URL = $this->getApi('playlists.list');
+
+        if (empty($params) || !isset($params['channelId'])) {
+            throw new \InvalidArgumentException('at least the channel id must be supplied');
+        }
+
         $apiData = $this->api_get($API_URL, $params);
-        return $this->decodeList($apiData);
+        if ($pageInfo) {
+            return array(
+                'results' => $this->decodeList($apiData),
+                'info'    => $this->page_info
+            );
+        } else {
+            return $this->decodeList($apiData);
+        }
     }
 
 
